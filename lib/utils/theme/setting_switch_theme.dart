@@ -7,23 +7,23 @@ class TSettingsSwitchTheme {
       switchTheme: SwitchThemeData(
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
 
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return TColors.PrimaryColor;
           }
           return Colors.grey.shade300;
         }),
 
-        thumbColor: MaterialStateProperty.all(Colors.white),
+        thumbColor: WidgetStateProperty.all(Colors.white),
 
-        trackOutlineColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return TColors.PrimaryColor;
           }
           return Colors.transparent;
         }),
 
-        trackOutlineWidth: const MaterialStatePropertyAll(1.2),
+        trackOutlineWidth: const WidgetStatePropertyAll(1.2),
       ),
     );
   }

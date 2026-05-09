@@ -6,10 +6,10 @@ class TCheckboxTheme {
   static CheckboxThemeData lightCheckboxTheme = CheckboxThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
 
-    checkColor: MaterialStateProperty.all(Colors.white),
+    checkColor: WidgetStateProperty.all(Colors.white),
 
-    fillColor: MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.selected)) {
+    fillColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
         return const Color(0xFF0D9488);
       }
       return Colors.transparent;
@@ -19,10 +19,10 @@ class TCheckboxTheme {
   static CheckboxThemeData darkCheckboxTheme = CheckboxThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
 
-    checkColor: MaterialStateProperty.all(Colors.white),
+    checkColor: WidgetStateProperty.all(Colors.white),
 
-    fillColor: MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.selected)) {
+    fillColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
         return const Color(0xFF0D9488);
       }
       return Colors.transparent;

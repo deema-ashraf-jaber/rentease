@@ -5,7 +5,7 @@ import '../../constants/colors.dart';
 class TAppBarTheme {
   TAppBarTheme._();
 
-  static final lightAppBarTheme = AppBarTheme(
+  static const lightAppBarTheme = AppBarTheme(
     elevation: 0,
     centerTitle: true,
     scrolledUnderElevation: 0,
@@ -20,7 +20,7 @@ class TAppBarTheme {
     ),
   );
 
-  static final darkAppBarTheme = AppBarTheme(
+  static const darkAppBarTheme = AppBarTheme(
     elevation: 0,
     centerTitle: true,
     scrolledUnderElevation: 0,

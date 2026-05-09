@@ -17,7 +17,7 @@ class TAppTheme {
     fontFamily: "RobotoCondensed",
     brightness: Brightness.light,
     primaryColor: TColors.PrimaryColor,
-    scaffoldBackgroundColor: Color(0xFFF8FDFD),
+    scaffoldBackgroundColor: const Color(0xFFF8FDFD),
     textTheme: TTextTheme.lightTextTheme,
     chipTheme: TChipTheme.lightChipTheme,
     elevatedButtonTheme: TElevatedButtonTheme.lightElevatedButtonTheme,
