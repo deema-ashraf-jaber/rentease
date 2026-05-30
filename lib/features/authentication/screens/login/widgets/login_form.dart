@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../../bottom_navigation.dart';
 import '../../signup/signup.dart';
 
 class TLoginForm extends StatelessWidget {
@@ -78,7 +79,15 @@ class TLoginForm extends StatelessWidget {
           SizedBox(
             height: 50,
             child: ElevatedButton(
-              onPressed: () {},
+               onPressed: () {
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+          builder: (context) =>
+          const BottomNavigationScreen(),
+          ),
+          );
+          },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1D3D7C),
                 foregroundColor: Colors.white,

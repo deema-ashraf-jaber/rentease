@@ -64,25 +64,12 @@ class TTexts {
   static const String continueB = "Continue";
 
   // --Home Screen
-  static const String hello = "Hello";
-  static const String letsShop = "Let’s Shop!";
-  static const String getDiscount = "Get Discount on Shop\nday";
-  static const String upTo = "UP to 50%";
-  static const String getNow = "Get Now";
-  static const String categories = "Categories";
-  static const String seeAll = "See All";
-  static const String phone = "Phone";
-  static const String fashion = "Fashion";
-  static const String audio = "Audio";
-  static const String laptop = "Laptop";
-  static const String games = "Games";
-  static const String flashDeals = "Flash Deals For You";
-  static const String popularProduct = "Popular Product";
-  static const String addToCart = "ADD To Cart";
+  static const String rentEase = "RentEase";
+  static const String search = "ابحث عن عقار...";
 
   // -- Categories Screen
   static const String featuredCategories = "Featured Categories";
-  static const String search = "Search";
+
   static const String newW = "New";
   static const String smartPhones = "Smartphones";
   static const String gaming = "Gaming";
