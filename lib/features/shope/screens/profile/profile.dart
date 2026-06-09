@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/divider.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/info_card.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/settings_tile.dart';
-
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/image_strings.dart';
@@ -15,11 +14,17 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FC),
-
       appBar:  TAppBar(
         title: 'الملف الشخصي',
         actionIcon: Icons.notifications_none,
-        onActionPressed: (){},
+        onActionPressed: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NotificationsScreen(),
+            ),
+          );
+        },
       ),
       body: SingleChildScrollView(
         child: Padding(

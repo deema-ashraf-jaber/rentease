@@ -44,6 +44,7 @@ flutter:
     - assets/logos/
     - assets/products/
     - assets/user/
+    - assets/states/
 
   fonts:
     - family: Cairo

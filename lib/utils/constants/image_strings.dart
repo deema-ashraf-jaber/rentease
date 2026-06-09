@@ -82,10 +82,7 @@ class TImages {
   static const String location = "assets/images/settings/location.png";
 
   // -- States Images
-  static const String wishlistEmpty = "assets/images/states/wishlist_empty.png";
-  static const String orderEmpty = "assets/images/states/order_empty.png";
-  static const String noConnection = "assets/images/states/no_connection.png";
-  static const String noResults = "assets/images/states/no_results.png";
+  static const String noNotification = "assets/states/noNotification.png";
 
   // -- OnBoarding light Images
   static const String onBoardingImage1 =
