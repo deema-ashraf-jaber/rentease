@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rentease/utils/constants/colors.dart';
 import 'features/shope/screens/addProperty/add_property.dart';
 import 'features/shope/screens/home/home.dart';
+import 'features/shope/screens/profile/profile.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});
@@ -22,9 +23,9 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     _pages = [
       const HomeScreen(),
       const Center(child: Text('بحث')),
-      AddPropertyScreen(),
+      const AddPropertyScreen(),
       const Center(child: Text('المفضلة')),
-      const Center(child: Text('حسابي')),
+      const ProfileScreen(),
     ];
   }
 
@@ -59,14 +60,14 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
             return InkWell(
               onTap: () => _onTap(index),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(24),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: selected
-                      ? const Color(0xffE5E5E5)
+                      ? TColors.PrimaryColor
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -74,18 +75,17 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                     Icon(
                       items[index][0] as IconData,
                       color: selected
-                          ? TColors.PrimaryColor
-                          : const Color(0xff6B7280),
+                          ? Colors.white
+                          : const Color(0xff94A3B8),
                       size: 23,
                     ),
-                    const SizedBox(height: 4),
                     Text(
                       items[index][1] as String,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontSize: 10,
                         color: selected
-                            ? Colors.black
-                            : const Color(0xff6B7280),
+                            ? Colors.white
+                            : const Color(0xff94A3B8),
                       ),
                     ),
                   ],
