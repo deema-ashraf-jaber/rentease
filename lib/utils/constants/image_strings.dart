@@ -101,4 +101,7 @@ class TImages {
 
   // -- Users Images
   static const String user1 = "assets/images/user/user1.png";
+
+  // -- Support  Images
+  static const String support = "assets/images/Support.png";
 }

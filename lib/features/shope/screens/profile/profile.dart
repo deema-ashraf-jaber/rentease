@@ -6,6 +6,7 @@ import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/image_strings.dart';
 import '../notifications/notifications.dart';
+import '../technicalSupport/technicalSupport.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -176,7 +177,14 @@ class ProfileScreen extends StatelessWidget {
                     SettingsTile(
                       title: 'الدعم الفني',
                       icon: Icons.support_agent,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TechnicalSupportScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
