@@ -6,6 +6,8 @@ class TImages {
   // -- Home Images
   static const String apartment1 = "assets/products/apartment1.jpg";
   static const String apartment2 = "assets/products/apartment2.jpg";
+  static const String apartment3 = "assets/products/apartment3.png";
+
   static const String gradient = "assets/products/gradient.png";
   static const String user = "assets/user/user.png";
 
@@ -100,7 +102,13 @@ class TImages {
   static const String userProfile = "assets/user/userProfile.png";
 
   // -- Users Images
-  static const String user1 = "assets/images/user/user1.png";
+  static const String user1 = "assets/user/user1.png";
+  static const String user2 = "assets/user/user2.png";
+  static const String user3 = "assets/user/user3.png";
+  static const String user4 = "assets/user/user4.png";
+  static const String user5 = "assets/user/user5.png";
+  static const String user6 = "assets/user/user6.png";
+
 
   // -- Support  Images
   static const String support = "assets/images/Support.png";

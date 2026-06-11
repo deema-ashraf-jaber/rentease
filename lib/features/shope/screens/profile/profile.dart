@@ -5,6 +5,7 @@ import 'package:rentease/features/shope/screens/profile/widgets/settings_tile.da
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/image_strings.dart';
+import '../chats/chats.dart';
 import '../notifications/notifications.dart';
 import '../technicalSupport/technicalSupport.dart';
 
@@ -171,7 +172,14 @@ class ProfileScreen extends StatelessWidget {
                       title: 'المحادثات',
                       icon: Icons.chat_bubble_outline,
                       badgeCount: 3,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChatsScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const TDivider(),
                     SettingsTile(
