@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 
-class TSignupForm extends StatelessWidget {
+class TSignupForm extends StatefulWidget {
   const TSignupForm({super.key});
+
+  @override
+  State<TSignupForm> createState() => _TSignupFormState();
+}
+
+class _TSignupFormState extends State<TSignupForm> {
+  bool hidePassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Form(
       child: Column(
         children: [
-          /// Full Name
+
           TextFormField(
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.person),
@@ -19,7 +26,6 @@ class TSignupForm extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// Email
           TextFormField(
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.email),
@@ -30,7 +36,6 @@ class TSignupForm extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// Phone Number
           TextFormField(
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.phone),
@@ -41,20 +46,31 @@ class TSignupForm extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// Password
           TextFormField(
-            obscureText: true,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.lock),
-              suffixIcon: Icon(Icons.remove_red_eye),
+            obscureText: hidePassword,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.lock),
+
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() {
+                    hidePassword = !hidePassword;
+                  });
+                },
+                icon: Icon(
+                  hidePassword
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                ),
+              ),
+
               labelText: 'كلمة المرور',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
           ),
 
           const SizedBox(height: 24),
 
-          /// Signup Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

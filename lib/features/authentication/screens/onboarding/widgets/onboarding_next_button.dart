@@ -5,6 +5,9 @@ import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/constants/text_strings.dart';
 import '../../../controllers.onboarding/onboarding_controller.dart';
 
+// 👇 استورد شاشة تسجيل الدخول
+import '../../../../authentication/screens/login/login.dart';
+
 class OnBoardingNextButton extends StatelessWidget {
   const OnBoardingNextButton({super.key});
 
@@ -24,7 +27,10 @@ class OnBoardingNextButton extends StatelessWidget {
           width: double.infinity,
           height: 50,
           child: ElevatedButton(
-            onPressed: () => controller.nextPage(),
+            onPressed: () {
+              // 👇 هون التعديل المهم
+              Get.offAll(() => const LoginScreen());
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: TColors.PrimaryColor,
               shape: RoundedRectangleBorder(
@@ -33,7 +39,8 @@ class OnBoardingNextButton extends StatelessWidget {
             ),
             child: const Text(
               TTexts.start,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
         )
