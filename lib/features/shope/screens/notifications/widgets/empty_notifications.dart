@@ -23,7 +23,7 @@ class EmptyNotifications extends StatelessWidget {
                 ],
               ),
             ),
-            child: const Opacity(
+            child:  Opacity(
               opacity: 0.40,
               child: Image(
                 image: AssetImage(TImages.noNotification),
