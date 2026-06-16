@@ -27,6 +27,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.only(right: 30),
         child: IconButton(
           onPressed: () {
+            Navigator.pop(context);
           },
           icon: Icon(Icons.notifications_none, color: foregroundColor, size: 28),
         ),
