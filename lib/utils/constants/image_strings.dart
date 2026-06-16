@@ -3,6 +3,17 @@ class TImages {
   static const String logo = "assets/logos/logo.png";
   static const String splash_full = "assets/logos/splash_full.png";
 
+  // -- Home Images
+  static const String apartment1 = "assets/products/apartment1.jpg";
+  static const String apartment2 = "assets/products/apartment2.jpg";
+  static const String gradient = "assets/products/gradient.png";
+  static const String user = "assets/user/user.png";
+
+  // -- Property Details Screen
+  static const String detailsHome = "assets/products/detailsHome.png";
+
+  // -- Add Property Screen
+  static const String uploadProperty = "assets/icons/upload_property.png";
   // -- Payments Logos
   static const String applePay = "assets/logos/payments/applePay.png";
   static const String payPal = "assets/logos/payments/PayPal.png";

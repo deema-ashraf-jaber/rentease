@@ -9,14 +9,14 @@ class TAppBarTheme {
     elevation: 0,
     centerTitle: true,
     scrolledUnderElevation: 0,
-    backgroundColor: TColors.PrimaryColor,
+    backgroundColor: Colors.white60,
     surfaceTintColor: Colors.transparent,
-    iconTheme: IconThemeData(color: Colors.white, size: 24),
-    actionsIconTheme: IconThemeData(color: Colors.white, size: 24),
+    iconTheme: IconThemeData(color: TColors.PrimaryColor, size: 24),
+    actionsIconTheme: IconThemeData(color: TColors.PrimaryColor, size: 24),
     titleTextStyle: TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
+      fontSize: 22,
+      fontWeight: FontWeight.w700,
+      color: TColors.PrimaryColor,
     ),
   );
 
@@ -26,12 +26,12 @@ class TAppBarTheme {
     scrolledUnderElevation: 0,
     backgroundColor: TColors.PrimaryColor,
     surfaceTintColor: Colors.transparent,
-    iconTheme: IconThemeData(color: Colors.white, size: 24),
-    actionsIconTheme: IconThemeData(color: Colors.white, size: 24),
+    iconTheme: IconThemeData(color: TColors.PrimaryColor, size: 24),
+    actionsIconTheme: IconThemeData(color: TColors.PrimaryColor, size: 24),
     titleTextStyle: TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
+      fontSize: 22,
+      fontWeight: FontWeight.w700,
+      color: TColors.PrimaryColor,
     ),
   );
 }
