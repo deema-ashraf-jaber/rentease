@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../../../bottom_navigation.dart';
 import '../../signup/signup.dart';
+import '../forgot_password/forgot_password.dart';
 
 class TLoginForm extends StatelessWidget {
   const TLoginForm({super.key});
@@ -44,7 +45,15 @@ class TLoginForm extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const ForgotPasswordScreen(),
+                    ),
+                  );
+                },
                 child: const Text(
                   "نسيت كلمة المرور؟",
                   style: TextStyle(color: Colors.grey),
