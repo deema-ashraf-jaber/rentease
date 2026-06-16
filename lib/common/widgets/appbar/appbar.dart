@@ -24,12 +24,12 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       centerTitle: true,
       leading: Padding(
-        padding: const EdgeInsets.only(right: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.notifications_none, color: foregroundColor, size: 28),
+          icon: Icon(Icons.arrow_back, color: foregroundColor, size: 28),
         ),
       ),
       title: Text(

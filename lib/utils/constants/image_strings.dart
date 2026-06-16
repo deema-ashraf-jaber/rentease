@@ -100,7 +100,7 @@ class TImages {
   // -- Verify email Images
 
   // -- Profile Images
-  static const String userProfile = "assets/images/user/userProfile.png";
+  static const String userProfile = "assets/user/userProfile.png";
 
   // -- Users Images
   static const String user1 = "assets/images/user/user1.png";
