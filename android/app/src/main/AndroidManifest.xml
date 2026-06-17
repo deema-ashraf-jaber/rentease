@@ -3,6 +3,9 @@
         android:label="rentease"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCZaBvlFong_HmZBYACZ3jIOREr8Yap1Kk"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

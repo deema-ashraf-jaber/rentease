@@ -34,33 +34,6 @@ class Search extends StatelessWidget {
           ],
         ),
 
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 1,
-          selectedItemColor: primary,
-          unselectedItemColor: Colors.grey,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: "الرئيسية",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: "بحث",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline),
-              label: "إضافة",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              label: "المفضلة",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: "حسابي",
-            ),
-          ],
-        ),
 
         body: Padding(
           padding: const EdgeInsets.all(16),

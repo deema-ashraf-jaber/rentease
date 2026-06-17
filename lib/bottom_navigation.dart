@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:rentease/features/shope/screens/favorites/screens/favorites_screen.dart';
 import 'package:rentease/utils/constants/colors.dart';
 import 'features/shope/screens/addProperty/add_property.dart';
 import 'features/shope/screens/home/home.dart';
 import 'features/shope/screens/profile/profile.dart';
+import 'features/shope/screens/search/search.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});
@@ -22,9 +24,9 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
     _pages = [
       const HomeScreen(),
-      const Center(child: Text('بحث')),
+      const Search(),
       const AddPropertyScreen(),
-      const Center(child: Text('المفضلة')),
+      FavoritesScreen(),
       const ProfileScreen(),
     ];
   }

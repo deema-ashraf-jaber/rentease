@@ -79,8 +79,7 @@ class FavoritesScreen extends StatelessWidget {
         ),
       ),
 
-      bottomNavigationBar:
-      const CustomBottomNavBar(),
+
     );
   }
 }
