@@ -82,10 +82,7 @@ class TImages {
   static const String location = "assets/images/settings/location.png";
 
   // -- States Images
-  static const String wishlistEmpty = "assets/images/states/wishlist_empty.png";
-  static const String orderEmpty = "assets/images/states/order_empty.png";
-  static const String noConnection = "assets/images/states/no_connection.png";
-  static const String noResults = "assets/images/states/no_results.png";
+  static const String noNotification = "assets/states/noNotification.png";
 
   // -- OnBoarding light Images
   static const String onBoardingImage1 =
@@ -104,12 +101,14 @@ class TImages {
 
   // -- Users Images
   static const String user1 = "assets/images/user/user1.png";
-
   static const String user2 = "assets/user/user2.png";
+  static const String user3 = "assets/user/user3.png";
   static const String user4 = "assets/user/user4.png";
   static const String user5 = "assets/user/user5.png";
   static const String user6 = "assets/user/user6.png";
 
+  // -- Support  Images
+  static const String support = "assets/images/Support.png";
   static const String apartment3 = "assets/products/apartment3.png";
-  static const String noNotification = "assets/states/noNotification.png";
+  static const String apartment4 = "assets/products/apartment4.png";
 }
