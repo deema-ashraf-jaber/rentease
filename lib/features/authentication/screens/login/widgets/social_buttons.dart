@@ -1,34 +1,56 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../utils/constants/colors.dart';
+
 class TSocialButtons extends StatelessWidget {
   const TSocialButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
+      children: const [
         Expanded(
-          child: OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(color: Colors.grey.shade300),
-            ),
-            child: const Text("جوجل Google"),
-          ),
+          child: _SocialButton(text: "جيميل Gmail"),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 18),
         Expanded(
-          child: OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(color: Colors.grey.shade300),
-            ),
-            child: const Text("جيميل Gmail"),
-          ),
+          child: _SocialButton(text: "جوجل Google"),
         ),
       ],
+    );
+  }
+}
+
+class _SocialButton extends StatelessWidget {
+  const _SocialButton({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 58,
+      child: OutlinedButton(
+        onPressed: () {},
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
+          side: const BorderSide(
+            color: Color(0xffD8D8D8),
+            width: 1,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: TColors.PrimaryColor,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
     );
   }
 }

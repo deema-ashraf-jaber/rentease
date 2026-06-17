@@ -1,41 +1,43 @@
 class TTexts {
   // -- OnBoarding Screen
-  static const String onBoardingTitle1 = "Welcome to Ecommerce";
+  static const String onBoardingTitle1 = "اكتشف المنزل الذي يناسبك";
   static const String onBoardingSubTitle1 =
-      "Shop from a wide range of categories like electronics and more, all at your \nfingertips!";
-  static const String onBoardingTitle2 = "Add and Pay with Ease";
+      "تصفح مجموعة واسعة من الشقق\nوالبيوت بسهولة";
+
+  static const String onBoardingTitle2 = "احجز بكل سهولة";
   static const String onBoardingSubTitle2 =
-      "Save items to your cart or favorites and \ncheckout securely with our digital \nwallet.";
-  static const String onBoardingTitle3 = "Secure & Easy Payments";
+      "تواصل مع المالك واختر المنزل\nالمناسب لك بسرعة";
+
+  static const String onBoardingTitle3 = "ابحث بطريقتك";
   static const String onBoardingSubTitle3 =
-      "Multiple payment options with bank \nlevel personal and payment \ninformation is always protected.";
-  static const String next = "Next";
-  static const String start = "Start";
-  static const String skip = "Skip";
+      "استخدم الفلاتر للعثور على المكان\nالمثالي لك";
+
+  static const String next = "التالي";
+  static const String start = "ابدأ الآن";
+  static const String skip = "تخطي";
 
   // -- Login Screen
-  static const String titleLogin = "Login to your account to continue shopping";
-  static const String subTitleLogin = "Welcome back to E-commerce\nApp 👋";
-  static const String emailAddress = "Email Address";
-  static const String password = "Password";
-  static const String rememberPassword = "Remember password";
-  static const String forgetPasswordQ = "Forget password?";
-  static const String login = "Login";
-  static const String dontHave = "Don't Have an account ? ";
-  static const String createNewAccount = "Create new Account";
-  static const String signUpDivider = "Or sign up with";
+  static const String titleLogin = "تسجيل الدخول";
+  static const String subTitleLogin = "أدخل بياناتك للوصول إلى حسابك";
+  static const String emailAddress = "البريد الإلكتروني";
+  static const String password = "كلمة المرور";
+  static const String rememberPassword = "";
+  static const String forgetPasswordQ = "نسيت كلمة المرور؟";
+  static const String login = "تسجيل الدخول";
+  static const String dontHave = "ليس لديك حساب؟";
+  static const String createNewAccount = "إنشاء حساب جديد";
+  static const String signUpDivider = "أو المتابعة عبر";
 
   // -- SignUp Screen
-  static const String titleSignup = "Create Account";
-  static const String subTitleSignup =
-      "Join us and start your shopping journey 🛍️";
-  static const String fullName = "Full Name";
-  static const String hintName = "Omar Aadam";
-  static const String confirmPassword = "Confirm Password";
-  static const String iAgreeTo = "I agree To the Terms";
-  static const String createAccount = "Create Account";
-  static const String alreadyHave = "Already have an account?";
-  static const String signInDivider = "Or sign In with";
+  static const String titleSignup = "RentEase";
+  static const String subTitleSignup = "إنشاء حساب جديد للبدء";
+  static const String fullName = "الاسم الكامل";
+  static const String hintName = "أدخل اسمك";
+  static const String confirmPassword = "تأكيد كلمة المرور";
+  static const String iAgreeTo = "أوافق على الشروط والأحكام";
+  static const String createAccount = "إنشاء حساب";
+  static const String alreadyHave = "لديك حساب بالفعل؟";
+  static const String signInDivider = "أو التسجيل بواسطة";
 
   // -- Forget password Screen
   static const String forgetPassword = "Forget Password";
