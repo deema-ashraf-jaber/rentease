@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:rentease/features/shope/screens/chats/chats.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/divider.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/info_card.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/settings_tile.dart';
+import 'package:rentease/features/shope/screens/support/technical_support_screen.dart' hide TechnicalSupportScreen;
+import 'package:rentease/features/shope/screens/technicalSupport/technicalSupport.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../utils/constants/colors.dart';
@@ -19,7 +22,14 @@ class ProfileScreen extends StatelessWidget {
       appBar:  TAppBar(
         title: 'الملف الشخصي',
         actionIcon: Icons.notifications_none,
-        onActionPressed: (){},
+        onActionPressed: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NotificationsScreen(),
+            ),
+          );
+        },
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -165,13 +175,27 @@ class ProfileScreen extends StatelessWidget {
                       title: 'المحادثات',
                       icon: Icons.chat_bubble_outline,
                       badgeCount: 3,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChatsScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const TDivider(),
                     SettingsTile(
                       title: 'الدعم الفني',
                       icon: Icons.support_agent,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TechnicalSupportScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -204,7 +228,7 @@ class ProfileScreen extends StatelessWidget {
                           color:Colors.white,
                           borderRadius: BorderRadius.circular(12)
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.logout,
                         size: 18.960918426513672,
                         color: Color(0xffBA1A1A),
