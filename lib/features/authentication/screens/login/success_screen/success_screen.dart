@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../bottom_navigation.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../login.dart';
 import 'widgets/continue_button.dart';
