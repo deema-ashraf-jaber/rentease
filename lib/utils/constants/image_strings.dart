@@ -3,6 +3,17 @@ class TImages {
   static const String logo = "assets/logos/logo.png";
   static const String splash_full = "assets/logos/splash_full.png";
 
+  // -- Home Images
+  static const String apartment1 = "assets/products/apartment1.jpg";
+  static const String apartment2 = "assets/products/apartment2.jpg";
+  static const String gradient = "assets/products/gradient.png";
+  static const String user = "assets/user/user.png";
+
+  // -- Property Details Screen
+  static const String detailsHome = "assets/products/detailsHome.png";
+
+  // -- Add Property Screen
+  static const String uploadProperty = "assets/icons/upload_property.png";
   // -- Payments Logos
   static const String applePay = "assets/logos/payments/applePay.png";
   static const String payPal = "assets/logos/payments/PayPal.png";
@@ -89,8 +100,16 @@ class TImages {
   // -- Verify email Images
 
   // -- Profile Images
-  static const String userProfile = "assets/images/user/userProfile.png";
+  static const String userProfile = "assets/user/userProfile.png";
 
   // -- Users Images
   static const String user1 = "assets/images/user/user1.png";
+
+  static const String user2 = "assets/user/user2.png";
+  static const String user4 = "assets/user/user4.png";
+  static const String user5 = "assets/user/user5.png";
+  static const String user6 = "assets/user/user6.png";
+
+  static const String apartment3 = "assets/products/apartment3.png";
+  static const String noNotification = "assets/states/noNotification.png";
 }
