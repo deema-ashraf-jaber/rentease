@@ -26,6 +26,11 @@ dependencies:
   http: ^1.6.0
   logger: ^2.7.0
   url_launcher: ^6.3.2
+  pdf: 3.11.3
+  image_picker: ^1.1.2
+  printing: ^5.13.4
+  external_path: ^2.2.0
+  permission_handler: ^12.0.3
   google_maps_flutter: ^2.17.1
   dotted_border: ^3.1.0
 
@@ -40,5 +45,15 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/images/on_boarding_images/
     - assets/logos/
+    - assets/products/
+    - assets/states/
+    - assets/user/
+    - assets/icons/
+    - assets/images/on_boarding_images/
+    - assets/images/properties/
+    - assets/fonts/Cairo-Regular.ttf
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-Regular.ttf

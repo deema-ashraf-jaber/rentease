@@ -109,6 +109,15 @@ class TImages {
 
   // -- Support  Images
   static const String support = "assets/images/Support.png";
+  static const String support_image = "assets/images/support_image.png";
   static const String apartment3 = "assets/products/apartment3.png";
   static const String apartment4 = "assets/products/apartment4.png";
+
+  static const String howuse1 = "assets/images/howuse1.png";
+  static const String howuse2 = "assets/images/howuse2.png";
+  static const String howuse3 = "assets/images/howuse3.png";
+
+  static const String termsofuse = "assets/images/termsofuse.png";
+
+
 }

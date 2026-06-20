@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../../utils/constants/colors.dart';
+import '../../favorites/models/favorite_manager.dart';
+import '../../favorites/models/favorite_property_model.dart';
 import '../property_details_screen/property_details_screen.dart';
 import 'info_box.dart';
 
@@ -14,14 +16,35 @@ class PropertyCard extends StatelessWidget {
     required this.beds,
     required this.baths,
     required this.area,
+    required this.description,
+
+    // TODO Supabase:
+    // لاحقاً هاي القيم تيجي من جدول properties
+    // أو من relation مع جدول profiles حسب owner_id
+    required this.ownerId,
+    required this.ownerName,
+    required this.ownerPhone,
+
     this.iconData = Icons.square_foot_outlined,
   });
 
-  final String image, title, location, price, beds, baths, area;
+  final String image, title, location, price, beds, baths, area, description;
+  final String ownerId, ownerName, ownerPhone;
   final IconData iconData;
 
   @override
   Widget build(BuildContext context) {
+    final favoriteProperty = FavoriteProperty(
+      image: image,
+      title: title,
+      location: location,
+      price: price,
+      rooms: beds,
+      bathrooms: baths,
+      area: area,
+      description: description,
+    );
+
     return Container(
       margin: const EdgeInsets.fromLTRB(22, 0, 22, 28),
       child: Column(
@@ -29,7 +52,25 @@ class PropertyCard extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => PropertyDetailsScreen(),),);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PropertyDetailsScreen(
+                    image: image,
+                    title: title,
+                    location: location,
+                    price: price,
+                    beds: beds,
+                    baths: baths,
+                    area: area,
+                    description: description,
+
+                    ownerId: ownerId,
+                    ownerName: ownerName,
+                    ownerPhone: ownerPhone,
+                  ),
+                ),
+              );
             },
             child: Stack(
               children: [
@@ -50,28 +91,43 @@ class PropertyCard extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 Positioned(
                   top: 14,
                   left: 14,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(.20),
+                  child: ValueListenableBuilder(
+                    valueListenable: FavoriteManager.favorites,
+                    builder: (context, favorites, _) {
+                      final isFav = FavoriteManager.isFavorite(title);
+
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          FavoriteManager.toggleFavorite(favoriteProperty);
+                        },
+                        child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(.20),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                isFav ? Icons.favorite : Icons.favorite_border,
+                                color: Colors.red.shade400,
+                              ),
+                            ),
+                          ),
                         ),
-                        child: Icon(
-                          Icons.favorite_border,
-                          color: Colors.red.shade400,
-                        ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
+
                 Positioned(
                   top: 14,
                   right: 14,
@@ -80,14 +136,20 @@ class PropertyCard extends StatelessWidget {
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(.80),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           'مميز',
-                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .copyWith(
                             color: const Color(0xff4A6FA5),
                             fontSize: 12,
                           ),
@@ -99,7 +161,9 @@ class PropertyCard extends StatelessWidget {
               ],
             ),
           ),
+
           const SizedBox(height: 14),
+
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -130,10 +194,7 @@ class PropertyCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text(
-                        location,
-                        style: const TextStyle(color: Colors.grey),
-                      ),
+                      Text(location, style: const TextStyle(color: Colors.grey)),
                       const SizedBox(width: 4),
                       const Icon(
                         Icons.location_on_outlined,
@@ -146,7 +207,9 @@ class PropertyCard extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 15),
+
           Row(
             textDirection: TextDirection.ltr,
             children: [

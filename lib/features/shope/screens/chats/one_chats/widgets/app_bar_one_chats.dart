@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../utils/constants/colors.dart';
-import '../../../../../../utils/constants/image_strings.dart';
+import '../../models/chat_model.dart';
 
 class TAppBarOneChats extends StatelessWidget implements PreferredSizeWidget {
-  const TAppBarOneChats({super.key});
+  final ChatModel chat;
+
+  const TAppBarOneChats({
+    super.key,
+    required this.chat,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -19,32 +24,24 @@ class TAppBarOneChats extends StatelessWidget implements PreferredSizeWidget {
         color: TColors.PrimaryColor,
         onPressed: () => Navigator.pop(context),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.more_vert),
-          color: TColors.PrimaryColor,
-          onPressed: () {},
-        ),
-      ],
       title: Row(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                'أحمد العقاد',
-                style: TextStyle(
+                chat.name,
+                style: const TextStyle(
                   color: TColors.PrimaryColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               Text(
-                'نشط الآن',
-                style: TextStyle(
+                chat.isOnline ? 'نشط الآن' : 'غير متصل',
+                style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
                 ),
@@ -57,24 +54,40 @@ class TAppBarOneChats extends StatelessWidget implements PreferredSizeWidget {
             children: [
               CircleAvatar(
                 radius: 25,
-                backgroundImage: AssetImage(TImages.user6),
+                backgroundColor: chat.isCompany
+                    ? const Color(0xFF9EC2FE)
+                    : const Color(0xFFE9EEF5),
+                backgroundImage:
+                chat.imagePath != null ? AssetImage(chat.imagePath!) : null,
+                child: chat.isCompany
+                    ? const Icon(
+                  Icons.business,
+                  color: TColors.PrimaryColor,
+                )
+                    : chat.imagePath == null
+                    ? const Icon(
+                  Icons.person,
+                  color: TColors.PrimaryColor,
+                )
+                    : null,
               ),
-              Positioned(
-                bottom: 1,
-                right: 1,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF22C55E),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2,
+              if (chat.isOnline)
+                Positioned(
+                  bottom: 1,
+                  right: 1,
+                  child: Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF22C55E),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ],

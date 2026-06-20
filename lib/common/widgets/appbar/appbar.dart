@@ -7,6 +7,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onActionPressed;
   final IconData? actionIcon;
   final Color foregroundColor;
+  final bool isBack ;
 
   const TAppBar({
     super.key,
@@ -15,6 +16,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onActionPressed,
     this.actionIcon,
     this.foregroundColor = TColors.PrimaryColor,
+    this.isBack = true ,
   });
 
   @override
@@ -23,7 +25,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
-      leading: Padding(
+      leading: isBack ? Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: IconButton(
           onPressed: () {
@@ -31,7 +33,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
           icon: Icon(Icons.arrow_back, color: foregroundColor, size: 28),
         ),
-      ),
+      ) : Container(),
       title: Text(
         title,
         style: Theme.of(context).textTheme.headlineMedium!.copyWith(

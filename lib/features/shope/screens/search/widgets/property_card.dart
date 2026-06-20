@@ -1,39 +1,41 @@
 import 'package:flutter/material.dart';
+import '../../../../../utils/constants/colors.dart';
+import '../../favorites/models/favorite_manager.dart';
+import '../../favorites/models/favorite_property_model.dart';
+import '../models/search_property_model.dart';
 
 class PropertyCard extends StatelessWidget {
-  final String image;
-  final String title;
-  final String location;
-  final String price;
-  final String rooms;
-  final String baths;
-  final String size;
-  final String rating;
+  final SearchPropertyModel property;
 
   const PropertyCard({
     super.key,
-    required this.image,
-    required this.title,
-    required this.location,
-    required this.price,
-    required this.rooms,
-    required this.baths,
-    required this.size,
-    required this.rating,
+    required this.property,
   });
 
   @override
   Widget build(BuildContext context) {
+    final favoriteProperty = FavoriteProperty(
+      image: property.image,
+      title: property.title,
+      location: property.location,
+      price: property.price,
+      rooms: property.rooms,
+      bathrooms: property.baths,
+      area: property.size,
+      description: property.description,
+    );
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-          )
+            color: Colors.black.withOpacity(.07),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
@@ -44,45 +46,70 @@ class PropertyCard extends StatelessWidget {
                 borderRadius:
                 const BorderRadius.vertical(top: Radius.circular(22)),
                 child: Image.asset(
-                  image,
-                  height: 220,
+                  property.image,
+                  height: 240,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
 
               Positioned(
-                top: 10,
-                left: 10,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.favorite_border,
-                    color: Colors.grey.shade600,
-                  ),
+                top: 16,
+                left: 16,
+                child: ValueListenableBuilder(
+                  valueListenable: FavoriteManager.favorites,
+                  builder: (context, favorites, _) {
+                    final isFav = FavoriteManager.isFavorite(property.title);
+
+                    return GestureDetector(
+                      onTap: () {
+                        FavoriteManager.toggleFavorite(favoriteProperty);
+
+                        // TODO Supabase:
+                        // لاحقاً هنا إذا isFav = false نعمل insert في جدول favorites
+                        // وإذا isFav = true نعمل delete من جدول favorites
+                      },
+                      child: CircleAvatar(
+                        radius: 21,
+                        backgroundColor: Colors.white.withOpacity(.65),
+                        child: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          color: isFav ? Colors.red : Colors.white,
+                          size: 26,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
 
               Positioned(
-                top: 10,
-                right: 10,
+                top: 16,
+                right: 16,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white.withOpacity(.95),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
                     children: [
-                      Text(rating),
+                      Text(
+                        property.rating,
+                        style: const TextStyle(
+                          color: TColors.PrimaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(width: 4),
                       const Icon(
                         Icons.star,
-                        color: Colors.amber,
-                        size: 18,
+                        color: TColors.PrimaryColor,
+                        size: 16,
                       ),
                     ],
                   ),
@@ -90,22 +117,25 @@ class PropertyCard extends StatelessWidget {
               ),
 
               Positioned(
-                bottom: 10,
-                right: 10,
+                bottom: 0,
+                right: 0,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 8,
+                    horizontal: 18,
+                    vertical: 10,
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xff234A8F),
-                    borderRadius: BorderRadius.circular(12),
+                  decoration: const BoxDecoration(
+                    color: TColors.PrimaryColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(14),
+                    ),
                   ),
                   child: Text(
-                    price,
+                    property.price,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
                 ),
@@ -114,38 +144,79 @@ class PropertyCard extends StatelessWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  title,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffEAF1FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        property.status,
+                        style: const TextStyle(
+                          color: TColors.PrimaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        property.title,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff222222),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(location),
+                    Text(
+                      property.location,
+                      style: const TextStyle(
+                        color: Color(0xff7E8082),
+                        fontSize: 14,
+                      ),
+                    ),
                     const SizedBox(width: 5),
-                    const Icon(Icons.location_on_outlined, size: 18),
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 18,
+                      color: Color(0xff7E8082),
+                    ),
                   ],
                 ),
+
+                const SizedBox(height: 16),
+
+                const Divider(color: Color(0xffE3E2E7)),
 
                 const SizedBox(height: 12),
 
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(size),
-                    Text(baths),
-                    Text(rooms),
+                    Text(property.size),
+                    Text(property.baths),
+                    Text(property.rooms),
                   ],
                 ),
               ],

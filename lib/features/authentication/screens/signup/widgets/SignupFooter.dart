@@ -11,14 +11,20 @@ class SignupFooter extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        const Text("لديك حساب بالفعل؟"),
         TextButton(
+          style: const ButtonStyle(
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
+            minimumSize: WidgetStatePropertyAll(Size.zero) ,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           onPressed: () => Get.to(() => const LoginScreen()),
           child: const Text(
             "تسجيل الدخول",
             style: TextStyle(color: Color(0xFF1D3D7C)),
           ),
         ),
-        const Text("لديك حساب بالفعل؟"),
+
       ],
     );
   }

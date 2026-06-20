@@ -1,32 +1,105 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rentease/features/shope/screens/chats/chats.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/divider.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/info_card.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/settings_tile.dart';
-import 'package:rentease/features/shope/screens/support/technical_support_screen.dart' hide TechnicalSupportScreen;
 import 'package:rentease/features/shope/screens/technicalSupport/technicalSupport.dart';
+import 'package:rentease/features/shope/screens/use/payment_fees_screen.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/image_strings.dart';
+import '../../../authentication/screens/login/login.dart';
 import '../notifications/notifications.dart';
+import 'models/profile_image_manager.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key,this.onSearchPressed});
+  final VoidCallback? onSearchPressed;
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Uint8List? selectedProfileImageBytes;
+  String? selectedProfileImageName;
+
+  Future<void> pickProfileImage() async {
+    final picker = ImagePicker();
+
+    final pickedImage = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (pickedImage == null) return;
+
+    final bytes = await pickedImage.readAsBytes();
+
+    ProfileImageManager.updateImage(
+      bytes: bytes,
+      name: pickedImage.name,
+    );
+
+    // TODO Supabase Storage:
+    // لاحقاً هنا نرفع صورة البروفايل على Supabase Storage.
+    //
+    // final fileName =
+    //     '${DateTime.now().millisecondsSinceEpoch}_$selectedProfileImageName';
+    //
+    // await Supabase.instance.client.storage
+    //     .from('profile-images')
+    //     .uploadBinary(fileName, selectedProfileImageBytes!);
+    //
+    // final imageUrl = Supabase.instance.client.storage
+    //     .from('profile-images')
+    //     .getPublicUrl(fileName);
+    //
+    // TODO Supabase Database:
+    // بعد ما نجيب imageUrl نحفظه في جدول users أو profiles:
+    //
+    // await Supabase.instance.client
+    //     .from('profiles')
+    //     .update({
+    //       'avatar_url': imageUrl,
+    //       'updated_at': DateTime.now().toIso8601String(),
+    //     })
+    //     .eq('id', Supabase.instance.client.auth.currentUser!.id);
+    //
+    // ملاحظة:
+    // عند فتح التطبيق لاحقاً نقرأ avatar_url من Supabase
+    // ونستخدم Image.network بدل الصورة الافتراضية.
+  }
+
+  ImageProvider get profileImageProvider {
+    if (selectedProfileImageBytes != null) {
+      return MemoryImage(selectedProfileImageBytes!);
+    }
+
+    return const AssetImage(TImages.userProfile);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FC),
-
-      appBar:  TAppBar(
+      appBar: TAppBar(
         title: 'الملف الشخصي',
+        isBack: false,
         actionIcon: Icons.notifications_none,
-        onActionPressed: (){
+        onActionPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const NotificationsScreen(),
+              builder: (context) =>  NotificationsScreen(
+                onSearchPressed: (){
+                  Navigator.pop(context);
+                  widget.onSearchPressed?.call();
+                },
+              ),
             ),
           );
         },
@@ -37,6 +110,7 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 30),
+
               Stack(
                 alignment: Alignment.bottomRight,
                 children: [
@@ -48,54 +122,64 @@ class ProfileScreen extends StatelessWidget {
                         width: 4,
                       ),
                     ),
-                    child: const CircleAvatar(
-                      radius: 58,
-                      backgroundImage: AssetImage(
-                        TImages.userProfile,
-                      ),
+                    child: ValueListenableBuilder<Uint8List?>(
+                      valueListenable: ProfileImageManager.profileImageBytes,
+                      builder: (context, imageBytes, _) {
+                        return CircleAvatar(
+                          radius: 58,
+                          backgroundImage: imageBytes != null
+                              ? MemoryImage(imageBytes)
+                              : const AssetImage(TImages.userProfile) as ImageProvider,
+                        );
+                      },
                     ),
                   ),
 
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 4,
+                  GestureDetector(
+                    onTap: pickProfileImage,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 4,
+                        ),
                       ),
-                    ),
-                    child:const  CircleAvatar(
-                      radius: 16,
-                      backgroundColor: TColors.PrimaryColor,
-                      child: Icon(
-                        Icons.edit,
-                        size: 16,
-                        color: Colors.white,
+                      child: const CircleAvatar(
+                        radius: 16,
+                        backgroundColor: TColors.PrimaryColor,
+                        child: Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
+
               const SizedBox(height: 16),
 
               Text(
-                  'رغدة جمال',
-                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xff1A1B1F)
-                  )
+                'رغدة جمال',
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xff1A1B1F),
+                ),
               ),
+
               Text(
-                  'raghda@example.com',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: const Color(0xff747781)
-                  )
+                'raghda@example.com',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: const Color(0xff747781),
+                ),
               ),
 
               const SizedBox(height: 24),
 
-               const  Row(
+              const Row(
                 children: [
                   Expanded(
                     child: InfoCard(
@@ -118,11 +202,11 @@ class ProfileScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                    'الإعدادات العامة',
-                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        fontWeight:FontWeight.w500,
-                        color: TColors.PrimaryColor.withOpacity(0.60)
-                    )
+                  'الإعدادات العامة',
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: TColors.PrimaryColor.withOpacity(0.60),
+                  ),
                 ),
               ),
 
@@ -143,7 +227,6 @@ class ProfileScreen extends StatelessWidget {
                         child: Transform.scale(
                           scale: 0.75,
                           child: Switch(
-
                             value: false,
                             onChanged: (value) {},
                             activeColor: Colors.white,
@@ -157,7 +240,9 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     const TDivider(),
+
                     SettingsTile(
                       title: 'الإشعارات',
                       icon: Icons.notifications_none,
@@ -165,12 +250,19 @@ class ProfileScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const NotificationsScreen(),
+                            builder: (context) =>  NotificationsScreen(
+                              onSearchPressed: (){
+                                Navigator.pop(context);
+                                widget.onSearchPressed?.call();
+                              },
+                            ),
                           ),
                         );
                       },
                     ),
+
                     const TDivider(),
+
                     SettingsTile(
                       title: 'المحادثات',
                       icon: Icons.chat_bubble_outline,
@@ -184,7 +276,9 @@ class ProfileScreen extends StatelessWidget {
                         );
                       },
                     ),
+
                     const TDivider(),
+
                     SettingsTile(
                       title: 'الدعم الفني',
                       icon: Icons.support_agent,
@@ -192,7 +286,23 @@ class ProfileScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const TechnicalSupportScreen(),
+                            builder: (context) =>
+                            const TechnicalSupportScreen(),
+                          ),
+                        );
+                      },
+                    ),
+
+                    const TDivider(),
+
+                    SettingsTile(
+                      title: 'الرسوم ولمدفوعات',
+                      icon: Icons.account_balance_wallet,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PaymentFeesScreen(),
                           ),
                         );
                       },
@@ -203,39 +313,54 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16 , vertical: 16),
-                decoration: BoxDecoration(
-                  color:  const Color(0xFFFFEFEF),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
+              InkWell(
+                borderRadius: BorderRadius.circular(24),
+                onTap: () {
+                  // TODO Supabase:
+                  // لاحقاً عند ربط Supabase نضيف:
+                  // await Supabase.instance.client.auth.signOut();
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                        (route) => false,
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFEFEF),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
                         'تسجيل الخروج',
                         style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            color: const Color(0xffBA1A1A) ,
-                            fontWeight: FontWeight.w700
-                        )
-                    ),
-                    const SizedBox(width: 16),
-                    Container(
-                      width:40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color:Colors.white,
-                          borderRadius: BorderRadius.circular(12)
+                          color: const Color(0xffBA1A1A),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.logout,
-                        size: 18.960918426513672,
-                        color: Color(0xffBA1A1A),
+                      const SizedBox(width: 16),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.logout,
+                          size: 18.960918426513672,
+                          color: Color(0xffBA1A1A),
+                        ),
                       ),
-                    ),
-
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:rentease/bottom_navigation.dart';
+import 'package:rentease/features/shope/screens/search/search.dart';
+
+import '../../../../utils/constants/image_strings.dart';
+import '../chats/models/chat_model.dart';
+import '../chats/one_chats/one_chats.dart';
 
 class HowToUseScreen extends StatelessWidget {
   const HowToUseScreen({super.key});
@@ -41,13 +47,11 @@ class HowToUseScreen extends StatelessWidget {
           ],
         ),
 
-        bottomNavigationBar: const _CustomBottomNav(),
-
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
           child: Column(
-            children: const [
-              Text(
+            children: [
+              const Text(
                 "كيفية الاستخدام",
                 style: TextStyle(
                   fontSize: 32,
@@ -56,9 +60,9 @@ class HowToUseScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              Text(
+              const Text(
                 "دليلك البسيط لاستخدام تطبيق RentEase\n"
                     "والحصول على أفضل تجربة لتأجير العقارات.\n"
                     "هل أنت جاهز للبدء؟",
@@ -71,28 +75,44 @@ class HowToUseScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 22),
+              const SizedBox(height: 22),
 
-              _ExploreButton(),
+              const _ExploreButton(),
 
-              SizedBox(height: 34),
+              const SizedBox(height: 34),
 
-              _ImageStepCard(
+               _ImageStepCard(
                 number: "01",
                 icon: Iconsax.search_normal,
                 title: "البحث والاستكشاف",
                 description:
                 "استخدم ميزة البحث المتقدم لتحديد الموقع،\nالسعر، ونوع العقار الذي تبحث عنه.",
-                image: "assets/images/howtoUse/step1.png",
+                image: TImages.howuse1,
+                 onTap: () {
+                   Navigator.push(
+                     context,
+                     MaterialPageRoute(
+                       builder: (context) => const BottomNavigationScreen(initialIndex: 1,),
+                     ),
+                   );
+                 },
               ),
 
-              _ImageStepCard(
+               _ImageStepCard(
                 number: "02",
                 icon: Iconsax.building,
                 title: "معاينة التفاصيل",
                 description:
                 "تصفح الصور والوصف الدقيق والمرافق\nالمتاحة في كل عقار قبل اتخاذ قرارك.",
-                image: "assets/images/howtoUse/step2.png",
+                image: TImages.howuse2,
+                 onTap: () {
+                   Navigator.push(
+                     context,
+                     MaterialPageRoute(
+                       builder: (context) => const BottomNavigationScreen(),
+                     ),
+                   );
+                 },
               ),
 
               _ImageStepCard(
@@ -101,14 +121,17 @@ class HowToUseScreen extends StatelessWidget {
                 title: "الحجز الفوري",
                 description:
                 "حدد التواريخ المناسبة لك وأرسل طلب الحجز\nبضغطة زر واحدة بكل سهولة وأمان.",
-                image: "assets/images/howtoUse/step3.png",
+                image: TImages.howuse3,
+                onTap: (){
+
+                },
               ),
 
-              _PaymentCard(),
+              const _PaymentCard(),
 
-              _SupportCard(),
+              const _SupportCard(),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
             ],
           ),
         ),
@@ -133,7 +156,14 @@ class _ExploreButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const BottomNavigationScreen(),
+            ),
+          );
+        },
         child: const Text(
           "استكشف العقارات الآن",
           style: TextStyle(
@@ -154,6 +184,7 @@ class _ImageStepCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.image,
+    required this.onTap,
   });
 
   final String number;
@@ -161,56 +192,60 @@ class _ImageStepCard extends StatelessWidget {
   final String title;
   final String description;
   final String image;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          _CardHeader(number: number, icon: icon),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            _CardHeader(number: number, icon: icon),
 
-          const SizedBox(height: 18),
+            const SizedBox(height: 18),
 
-          Text(
-            title,
-            style: const TextStyle(
-              color: HowToUseScreen.primaryColor,
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
+            Text(
+              title,
+              style: const TextStyle(
+                color: HowToUseScreen.primaryColor,
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+              ),
             ),
-          ),
 
-          const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xff5F5F5F),
-              fontSize: 14,
-              height: 1.6,
-              fontWeight: FontWeight.w500,
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Color(0xff5F5F5F),
+                fontSize: 14,
+                height: 1.6,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
 
-          const SizedBox(height: 18),
+            const SizedBox(height: 18),
 
-          ClipRRect(
-            borderRadius: BorderRadius.circular(3),
-            child: Image.asset(
-              image,
-              height: 155,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: Image.asset(
+                image,
+                height: 155,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -339,7 +374,30 @@ class _SupportCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(7),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                const supportChat = ChatModel(
+                  name: 'الدعم الفني',
+                  lastMessage: 'مرحباً، كيف يمكننا مساعدتك اليوم؟',
+                  time: 'الآن',
+                  isOnline: true,
+                  isCompany: true,
+                  messages: [
+                    ChatMessageModel(
+                      text:
+                      'مرحباً بك في دعم RentEase، كيف يمكننا مساعدتك اليوم؟',
+                      isSender: true,
+                      time: 'الآن',
+                    ),
+                  ],
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const OneChatsScreen(chat: supportChat),
+                  ),
+                );
+              },
               child: const Text(
                 "مركز المساعدة",
                 style: TextStyle(
@@ -422,79 +480,4 @@ class _PaymentIcon extends StatelessWidget {
   }
 }
 
-class _CustomBottomNav extends StatelessWidget {
-  const _CustomBottomNav();
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 92,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _NavItem(icon: Iconsax.home_2, label: "الرئيسية"),
-          _NavItem(icon: Iconsax.search_normal, label: "بحث"),
-          _NavItem(icon: Iconsax.add_circle, label: "إضافة"),
-          _NavItem(icon: Iconsax.heart, label: "المفضلة"),
-          _NavItem(
-            icon: Iconsax.user,
-            label: "الحساب",
-            isSelected: true,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    this.isSelected = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: isSelected ? 72 : 54,
-      height: 66,
-      decoration: BoxDecoration(
-        color: isSelected
-            ? HowToUseScreen.primaryColor
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(17),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Colors.white : const Color(0xffA7AAB0),
-            size: 24,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : const Color(0xffA7AAB0),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

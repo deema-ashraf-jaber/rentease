@@ -15,7 +15,7 @@ class SuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: TColors.backgroundColor,
-      body: SafeArea(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
@@ -33,7 +33,7 @@ class SuccessScreen extends StatelessWidget {
 
               const TransactionCard(),
 
-              const Spacer(),
+              const SizedBox(height: 130),
 
               ContinueButton(
                 onPressed: () {

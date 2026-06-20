@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../../utils/constants/colors.dart';
 
 class ConfirmCodeHeader extends StatelessWidget {
-  const ConfirmCodeHeader({super.key});
+  const ConfirmCodeHeader({
+    super.key,
+    required this.email,
+  });
+
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +20,7 @@ class ConfirmCodeHeader extends StatelessWidget {
             fontSize: 24,
           ),
         ),
-
         const SizedBox(height: 11),
-
         Text(
           'لقد أرسلنا رمز التحقق إلى البريد الإلكتروني',
           textAlign: TextAlign.center,
@@ -26,13 +28,11 @@ class ConfirmCodeHeader extends StatelessWidget {
             color: const Color(0xff474747),
           ),
         ),
-
         const SizedBox(height: 4),
-
         Padding(
           padding: const EdgeInsets.only(right: 13),
           child: Text(
-            'us**@gmail.com',
+            email,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: TColors.PrimaryColor,
               fontWeight: FontWeight.w700,

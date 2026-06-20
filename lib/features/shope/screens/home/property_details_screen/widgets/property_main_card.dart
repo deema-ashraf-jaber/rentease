@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import '../../../../../../utils/constants/colors.dart';
 
 class PropertyMainCard extends StatelessWidget {
-  const PropertyMainCard({super.key});
+  const PropertyMainCard({
+    super.key,
+    required this.title,
+    required this.location,
+    required this.price,
+  });
+
+  final String title;
+  final String location;
+  final String price;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +32,7 @@ class PropertyMainCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'فيلا مودرن في دير البلح',
+            title,
             textAlign: TextAlign.right,
             style: Theme.of(context).textTheme.headlineLarge!.copyWith(
               color: TColors.PrimaryColor,
@@ -33,7 +42,7 @@ class PropertyMainCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'غزة، دير البلح',
+            location,
             style: Theme.of(context).textTheme.titleSmall!.copyWith(
               color: const Color(0xff6B7280),
             ),
@@ -42,7 +51,7 @@ class PropertyMainCard extends StatelessWidget {
           Column(
             children: [
               Text(
-                '٤,٠٠٠ ش.إ',
+                '$price ش.ج',
                 style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                   fontSize: 24,
                   letterSpacing: -1.2,

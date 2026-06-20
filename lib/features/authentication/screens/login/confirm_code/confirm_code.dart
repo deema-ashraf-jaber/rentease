@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rentease/utils/constants/colors.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../reset_password/reset_password.dart';
 import 'widgets/confirm_code_header.dart';
@@ -8,8 +9,10 @@ import 'widgets/verify_button.dart';
 import 'widgets/support_section.dart';
 
 class ConfirmCodeScreen extends StatefulWidget {
-  const ConfirmCodeScreen({super.key});
+  const ConfirmCodeScreen({super.key,
+  required this.email});
 
+  final String email;
   @override
   State<ConfirmCodeScreen> createState() => _ConfirmCodeScreenState();
 }
@@ -69,37 +72,40 @@ class _ConfirmCodeScreenState extends State<ConfirmCodeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: TColors.backgroundColor,
       appBar: const TAppBar(title: ''),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            children: [
+              const SizedBox(height: 50),
 
-            const ConfirmCodeHeader(),
+              ConfirmCodeHeader(email:widget.email),
 
-            const SizedBox(height: 48),
+              const SizedBox(height: 48),
 
-            OtpFields(
-              controllers: _controllers,
-              focusNodes: _focusNodes,
-              onChanged: _onOtpChanged,
-            ),
+              OtpFields(
+                controllers: _controllers,
+                focusNodes: _focusNodes,
+                onChanged: _onOtpChanged,
+              ),
 
-            const SizedBox(height: 40),
+              const SizedBox(height: 40),
 
-            const ResendCodeSection(),
+              const ResendCodeSection(),
 
-            const SizedBox(height: 48),
+              const SizedBox(height: 48),
 
-            VerifyButton(onPressed: _verifyCode),
+              VerifyButton(onPressed: _verifyCode),
 
-            const Spacer(),
+              const SizedBox(height: 176),
 
-            const SupportSection(),
+              const SupportSection(),
 
-            const SizedBox(height: 96),
-          ],
+              const SizedBox(height: 96),
+            ],
+          ),
         ),
       ),
     );

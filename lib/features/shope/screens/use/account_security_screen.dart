@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:rentease/features/authentication/screens/login/reset_password/reset_password.dart';
 
 import '../../../../../utils/constants/colors.dart';
+import '../chats/models/chat_model.dart';
+import '../chats/one_chats/one_chats.dart';
 
 class AccountSecurityScreen extends StatelessWidget {
   const AccountSecurityScreen({super.key});
@@ -42,15 +45,12 @@ class AccountSecurityScreen extends StatelessWidget {
             ),
           ],
         ),
-
-        bottomNavigationBar: const _CustomBottomNav(),
-
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 "الحساب والأمان",
                 style: TextStyle(
                   color: TColors.PrimaryColor,
@@ -59,9 +59,9 @@ class AccountSecurityScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-              Text(
+              const Text(
                 "إدارة خصوصيتك وأمانك ووصولك إلى\nخدمات RentEase.",
                 textAlign: TextAlign.right,
                 style: TextStyle(
@@ -72,51 +72,61 @@ class AccountSecurityScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 36),
+              const SizedBox(height: 36),
 
-              _SecurityProgressCard(),
+              const _SecurityProgressCard(),
 
-              SizedBox(height: 28),
+              const SizedBox(height: 28),
 
-              _IdentityCard(),
+              const _IdentityCard(),
 
-              SizedBox(height: 42),
+              const SizedBox(height: 42),
 
-              _SectionTitle(title: "إعدادات الدخول"),
+              const _SectionTitle(title: "إعدادات الدخول"),
 
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
 
               _SettingItem(
                 icon: Iconsax.key,
                 title: "تغيير كلمة المرور",
                 subtitle: "آخر تغيير قبل 3 أشهر",
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ResetPasswordScreen(),
+                    ),
+                  );
+                },
               ),
 
-              SizedBox(height: 36),
+              const SizedBox(height: 36),
 
-              _SectionTitle(title: "الخصوصية والبيانات"),
+              const _SectionTitle(title: "الخصوصية والبيانات"),
 
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
 
-              _SettingItem(
+               _SettingItem(
                 icon: Iconsax.eye_slash,
                 title: "خصوصية الحساب",
                 subtitle: "إدارة من يستطيع رؤية ملفك الشخصي",
+                onTap: (){},
               ),
 
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-              _SettingItem(
+               _SettingItem(
                 icon: Iconsax.monitor,
                 title: "الأجهزة المرتبطة",
                 subtitle: "3 أجهزة نشطة حالياً",
+                 onTap: (){},
               ),
 
-              SizedBox(height: 38),
+              const SizedBox(height: 38),
 
-              _HelpCard(),
+              const _HelpCard(),
 
-              SizedBox(height: 28),
+              const SizedBox(height: 28),
             ],
           ),
         ),
@@ -258,72 +268,78 @@ class _SettingItem extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback onTap;
+
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 86,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      decoration: BoxDecoration(
-        color: const Color(0xffF1F1F1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.arrow_back_ios_new,
-            color: TColors.PrimaryColor,
-            size: 17,
-          ),
-
-          const Spacer(),
-
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Color(0xff202020),
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Color(0xff777777),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(width: 18),
-
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Icon(
-              icon,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 86,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        decoration: BoxDecoration(
+          color: const Color(0xffF1F1F1),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.arrow_back_ios_new,
               color: TColors.PrimaryColor,
-              size: 24,
+              size: 17,
             ),
-          ),
-        ],
+
+            const Spacer(),
+
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Color(0xff202020),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Color(0xff777777),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(width: 18),
+
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Icon(
+                icon,
+                color: TColors.PrimaryColor,
+                size: 24,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -380,7 +396,29 @@ class _HelpCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                const supportChat = ChatModel(
+                  name: 'الدعم الفني',
+                  lastMessage: 'مرحباً، كيف يمكننا مساعدتك اليوم؟',
+                  time: 'الآن',
+                  isOnline: true,
+                  isCompany: true,
+                  messages: const [
+                    ChatMessageModel(
+                      text: 'مرحباً بك في دعم RentEase، كيف يمكننا مساعدتك اليوم؟',
+                      isSender: true,
+                      time: 'الآن',
+                    ),
+                  ],
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const OneChatsScreen(chat: supportChat),
+                  ),
+                );
+              },
               child: const Text(
                 "تواصل معنا",
                 style: TextStyle(
@@ -397,37 +435,6 @@ class _HelpCard extends StatelessWidget {
   }
 }
 
-class _CustomBottomNav extends StatelessWidget {
-  const _CustomBottomNav();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 92,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _NavItem(icon: Iconsax.home_2, label: "الرئيسية"),
-          _NavItem(icon: Iconsax.search_normal, label: "بحث"),
-          _NavItem(icon: Iconsax.add_circle, label: "إضافة"),
-          _NavItem(icon: Iconsax.heart, label: "المفضلة"),
-          _NavItem(
-            icon: Iconsax.user,
-            label: "الحساب",
-            isSelected: true,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _NavItem extends StatelessWidget {
   const _NavItem({

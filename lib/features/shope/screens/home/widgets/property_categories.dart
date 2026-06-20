@@ -1,10 +1,13 @@
-
-
 import 'package:flutter/material.dart';
 import '../../../../../utils/constants/colors.dart';
 
 class PropertyCategories extends StatefulWidget {
-  const PropertyCategories();
+  const PropertyCategories({
+    super.key,
+    required this.onCategoryChanged,
+  });
+
+  final Function(String category) onCategoryChanged;
 
   @override
   State<PropertyCategories> createState() => _CategoriesState();
@@ -33,20 +36,25 @@ class _CategoriesState extends State<PropertyCategories> {
               setState(() {
                 selectedIndex = index;
               });
+
+              widget.onCategoryChanged(cats[index]);
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               height: 36,
               padding: const EdgeInsets.symmetric(horizontal: 21),
               decoration: BoxDecoration(
-                color: selected ? TColors.PrimaryColor : const Color(0xffE9EAEE),
+                color: selected
+                    ? TColors.PrimaryColor
+                    : const Color(0xffE9EAEE),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Center(
                 child: Text(
                   cats[index],
                   style: TextStyle(
-                    color: selected ? Colors.white : const Color(0xff222222),
+                    color:
+                    selected ? Colors.white : const Color(0xff222222),
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),

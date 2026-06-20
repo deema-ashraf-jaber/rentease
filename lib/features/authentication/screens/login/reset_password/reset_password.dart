@@ -14,6 +14,7 @@ class ResetPasswordScreen extends StatefulWidget {
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
@@ -31,11 +32,60 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     super.dispose();
   }
 
-  void _goToSuccessScreen() {
+  void _updatePassword() {
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    final hasNumber = RegExp(r'[0-9]').hasMatch(password);
+    final hasSpecialChar = RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(password);
+
+    if (password.isEmpty || confirmPassword.isEmpty) {
+      _showMessage('الرجاء تعبئة كلمة المرور وتأكيدها');
+      return;
+    }
+
+    if (password.length < 8) {
+      _showMessage('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+      return;
+    }
+
+    if (!hasNumber) {
+      _showMessage('كلمة المرور يجب أن تحتوي على رقم واحد على الأقل');
+      return;
+    }
+
+    if (!hasSpecialChar) {
+      _showMessage('كلمة المرور يجب أن تحتوي على رمز خاص واحد على الأقل');
+      return;
+    }
+
+    if (password != confirmPassword) {
+      _showMessage('كلمة المرور وتأكيد كلمة المرور غير متطابقين');
+      return;
+    }
+
+    // TODO Supabase:
+    // لاحقاً هنا نضيف كود تحديث كلمة المرور:
+    // await Supabase.instance.client.auth.updateUser(
+    //   UserAttributes(password: password),
+    // );
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const SuccessScreen(),
+      ),
+    );
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          textAlign: TextAlign.right,
+        ),
+        backgroundColor: TColors.PrimaryColor,
       ),
     );
   }
@@ -45,7 +95,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return Scaffold(
       backgroundColor: TColors.backgroundColor,
       appBar: const TAppBar(title: ''),
-      body: SafeArea(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
@@ -90,7 +140,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: 134),
 
               UpdatePasswordButton(
-                onPressed: _goToSuccessScreen,
+                onPressed: _updatePassword,
               ),
 
               const SizedBox(height: 23),

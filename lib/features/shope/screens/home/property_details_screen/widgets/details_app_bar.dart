@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../../utils/constants/colors.dart';
 import '../../../../../../utils/constants/image_strings.dart';
+import '../../../notifications/notifications.dart';
 
 class DetailsAppBar extends StatelessWidget {
   const DetailsAppBar({super.key});
@@ -23,6 +24,9 @@ class DetailsAppBar extends StatelessWidget {
       child: Row(
         textDirection: TextDirection.ltr,
         children: [
+          IconButton(onPressed: () {
+            Navigator.pop(context);
+          }, icon: const Icon(Icons.arrow_forward,color: TColors.PrimaryColor,)),
           Text(
             'RentEase',
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -41,7 +45,14 @@ class DetailsAppBar extends StatelessWidget {
             icon: const Icon(Icons.share_outlined, color: TColors.PrimaryColor),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsScreen(),
+                ),
+              );
+            },
             icon: const Icon(Icons.notifications_none, color: TColors.PrimaryColor),
           ),
         ],

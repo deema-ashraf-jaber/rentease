@@ -1,7 +1,13 @@
+
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:flutter/services.dart';
 import 'package:rentease/utils/constants/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../utils/constants/image_strings.dart';
 
 class TermsOfServiceScreen extends StatelessWidget {
   const TermsOfServiceScreen({super.key});
@@ -43,11 +49,10 @@ class TermsOfServiceScreen extends StatelessWidget {
             ),
           ],
         ),
-        bottomNavigationBar: const _CustomBottomNav(),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        body: const SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           child: Column(
-            children: const [
+            children: [
               Text(
                 'LEGAL DOCUMENT',
                 style: TextStyle(
@@ -250,8 +255,8 @@ class _AccountResponsibilitySection extends StatelessWidget {
         color: TermsOfServiceScreen.softGreyBox,
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Column(
-        children: const [
+      child: const Column(
+        children: [
           _SectionHeader(
             number: '02',
             numberAlignment: Alignment.centerRight,
@@ -272,7 +277,7 @@ class _AccountResponsibilitySection extends StatelessWidget {
           ),
           SizedBox(height: 28),
           Image(
-            image: AssetImage('assets/images/terms/account_security.png'),
+            image: AssetImage(TImages.termsofuse),
             height: 270,
             fit: BoxFit.contain,
           ),
@@ -501,6 +506,14 @@ class _ForbiddenItem extends StatelessWidget {
 class _SupportButton extends StatelessWidget {
   const _SupportButton();
 
+  Future<void> _callSupport() async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: '0599999999');
+
+    if (!await launchUrl(phoneUri)) {
+      throw Exception('Could not launch phone');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -514,7 +527,7 @@ class _SupportButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        onPressed: () {},
+        onPressed: _callSupport,
         child: const Text(
           'اتصل بمركز الدعم',
           style: TextStyle(
@@ -531,6 +544,125 @@ class _SupportButton extends StatelessWidget {
 class _PdfButton extends StatelessWidget {
   const _PdfButton();
 
+  Future<void> _downloadPdf(BuildContext context) async {
+    final pdf = pw.Document();
+
+    final cairoFont = pw.Font.ttf(
+      await rootBundle.load('assets/fonts/Cairo-Regular.ttf'),
+    );
+
+    final titleStyle = pw.TextStyle(
+      font: cairoFont,
+      fontSize: 20,
+      fontWeight: pw.FontWeight.bold,
+    );
+
+    final bodyStyle = pw.TextStyle(
+      font: cairoFont,
+      fontSize: 13,
+      lineSpacing: 5,
+    );
+
+    List<pw.Widget> section(String title, String body) {
+      return [
+        pw.Text(title, textAlign: pw.TextAlign.right, style: titleStyle),
+        pw.SizedBox(height: 8),
+        pw.Text(body, textAlign: pw.TextAlign.right, style: bodyStyle),
+        pw.SizedBox(height: 18),
+      ];
+    }
+
+    pdf.addPage(
+      pw.MultiPage(
+        textDirection: pw.TextDirection.rtl,
+        theme: pw.ThemeData.withFont(
+          base: cairoFont,
+          bold: cairoFont,
+        ),
+        build: (context) => [
+          pw.Center(
+            child: pw.Text(
+              'شروط الخدمة - RentEase',
+              style: pw.TextStyle(
+                font: cairoFont,
+                fontSize: 24,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+          ),
+          pw.SizedBox(height: 25),
+
+          ...section(
+            '1. المقدمة والقبول',
+            'مرحباً بك في RentEase. باستخدامك للتطبيق أو إنشاء حساب أو تصفح العقارات المعروضة، فإنك توافق على الالتزام بجميع الشروط والأحكام الواردة في هذه الوثيقة.',
+          ),
+
+          ...section(
+            '2. مسؤوليات المستخدم والحساب',
+            'يتحمل المستخدم المسؤولية الكاملة عن صحة البيانات التي يقوم بإدخالها داخل التطبيق، كما يلتزم بالحفاظ على سرية بيانات تسجيل الدخول وعدم مشاركتها مع أي طرف آخر.',
+          ),
+
+          ...section(
+            '3. العقارات والإعلانات',
+            'يتحمل مالك العقار المسؤولية الكاملة عن صحة المعلومات والصور والوصف الخاص بالعقار المضاف إلى المنصة. ويحق لإدارة RentEase مراجعة أو حذف أي إعلان مخالف.',
+          ),
+
+          ...section(
+            '4. الرسوم والمدفوعات',
+            'قد تتطلب بعض الخدمات رسوماً يتم توضيحها للمستخدم قبل إتمام العملية. ويتحمل المستخدم مسؤولية التأكد من صحة بيانات الدفع وإرسال إشعار الدفع عند الحاجة.',
+          ),
+
+          ...section(
+            '5. سياسة الإلغاء والاسترداد',
+            'يمكن للمستخدم طلب إلغاء الحجز أو الاتفاق مع مالك العقار وفقاً للسياسات المتفق عليها بين الطرفين. وتتم مراجعة طلبات الاسترداد خلال فترة زمنية مناسبة.',
+          ),
+
+          ...section(
+            '6. الاستخدامات المحظورة',
+            'يمنع انتحال شخصية مستخدم آخر، أو نشر معلومات مضللة، أو رفع محتوى مسيء، أو محاولة اختراق أنظمة التطبيق، أو استخدام المنصة لأغراض احتيالية أو غير قانونية.',
+          ),
+
+          ...section(
+            '7. الخصوصية وحماية البيانات',
+            'تحترم RentEase خصوصية المستخدمين وتلتزم بحماية المعلومات الشخصية وفقاً لسياسات الأمان المتبعة، ولا يتم مشاركة البيانات إلا عند الحاجة القانونية أو التشغيلية.',
+          ),
+
+          ...section(
+            '8. حدود المسؤولية',
+            'لا تتحمل RentEase مسؤولية أي اتفاقات أو معاملات تتم خارج نطاق المنصة بين المستخدمين، كما لا تتحمل مسؤولية معلومات غير صحيحة يقدمها المستخدمون.',
+          ),
+
+          ...section(
+            '9. التعديلات على الشروط',
+            'تحتفظ إدارة RentEase بحق تعديل هذه الشروط والأحكام في أي وقت بما يتناسب مع تطوير المنصة أو المتطلبات القانونية.',
+          ),
+
+          ...section(
+            '10. التواصل والدعم',
+            'للاستفسار يمكن التواصل مع فريق الدعم الفني.\nالبريد الإلكتروني: support@rentease.com\nرقم الدعم: 0599999999',
+          ),
+        ],
+      ),
+    );
+
+    final bytes = await pdf.save();
+
+    await Printing.sharePdf(
+      bytes: bytes,
+      filename: 'rentease_terms.pdf',
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'تم تجهيز ملف PDF بنجاح',
+          textAlign: TextAlign.right,
+        ),
+        backgroundColor: TColors.PrimaryColor,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -544,7 +676,7 @@ class _PdfButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        onPressed: () {},
+        onPressed: () => _downloadPdf(context),
         child: const Text(
           'تحميل نسخة PDF',
           style: TextStyle(
@@ -553,81 +685,6 @@ class _PdfButton extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _CustomBottomNav extends StatelessWidget {
-  const _CustomBottomNav();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 92,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _NavItem(icon: Iconsax.home_2, label: 'الرئيسية'),
-          _NavItem(icon: Iconsax.search_normal, label: 'بحث'),
-          _NavItem(icon: Iconsax.add_circle, label: 'إضافة'),
-          _NavItem(icon: Iconsax.heart, label: 'المفضلة'),
-          _NavItem(
-            icon: Iconsax.user,
-            label: 'الحساب',
-            isSelected: true,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    this.isSelected = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: isSelected ? 72 : 54,
-      height: 66,
-      decoration: BoxDecoration(
-        color: isSelected ? TColors.PrimaryColor : Colors.transparent,
-        borderRadius: BorderRadius.circular(17),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Colors.white : const Color(0xffA7AAB0),
-            size: 24,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : const Color(0xffA7AAB0),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }

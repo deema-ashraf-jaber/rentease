@@ -1,8 +1,41 @@
 import 'package:flutter/material.dart';
 import '../../../../../../utils/constants/colors.dart';
 
-class MessageInput extends StatelessWidget {
-  const MessageInput({super.key});
+class MessageInput extends StatefulWidget {
+  const MessageInput({
+    super.key,
+    required this.onSend,
+  });
+
+  final void Function(String message) onSend;
+
+  @override
+  State<MessageInput> createState() => _MessageInputState();
+}
+
+class _MessageInputState extends State<MessageInput> {
+  final TextEditingController messageController = TextEditingController();
+
+  void sendMessage() {
+    final text = messageController.text.trim();
+
+    if (text.isEmpty) return;
+
+    widget.onSend(text);
+    messageController.clear();
+
+    // TODO Supabase:
+    // لاحقاً هنا بدل الإرسال المحلي فقط
+    // نعمل insert في جدول messages
+    // ونحفظ:
+    // chatId, senderId, messageText, createdAt, isSeen
+  }
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,18 +52,30 @@ class MessageInput extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 24,
-            height: 48,
-            decoration: BoxDecoration(
-              color: TColors.PrimaryColor,
-              borderRadius: BorderRadius.circular(12),
+          GestureDetector(
+            onTap: sendMessage,
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: TColors.PrimaryColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.send,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
           ),
+
           const SizedBox(width: 10),
+
           Expanded(
             child: TextField(
+              controller: messageController,
               textAlign: TextAlign.right,
+              onSubmitted: (_) => sendMessage(),
               decoration: InputDecoration(
                 hintText: '...اكتب رسالة',
                 prefixIcon: const Icon(
@@ -50,7 +95,9 @@ class MessageInput extends StatelessWidget {
               ),
             ),
           ),
+
           const SizedBox(width: 16),
+
           const Icon(
             Icons.mic_none,
             color: Color(0xff747781),

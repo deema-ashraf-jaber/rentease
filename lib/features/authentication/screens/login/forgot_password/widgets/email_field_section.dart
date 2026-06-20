@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../../../utils/constants/colors.dart';
 
 class EmailFieldSection extends StatelessWidget {
-  const EmailFieldSection({super.key});
-
+  const EmailFieldSection({super.key,required this.controller});
+final TextEditingController controller ;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,6 +23,7 @@ class EmailFieldSection extends StatelessWidget {
         const SizedBox(height: 8),
 
         TextFormField(
+          controller: controller,
           textAlign: TextAlign.right,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(

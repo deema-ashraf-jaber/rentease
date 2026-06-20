@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../utils/constants/colors.dart';
 
@@ -16,7 +17,7 @@ class PasswordSupportRow extends StatelessWidget {
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          onPressed: () {},
+          onPressed:  () => _callSupport(),
           child: Text(
             ' تواصل مع الدعم',
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
@@ -36,5 +37,13 @@ class PasswordSupportRow extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+Future<void> _callSupport() async {
+  final Uri phoneUri = Uri(scheme: 'tel', path: '0599999999');
+
+  if (!await launchUrl(phoneUri)) {
+    throw Exception('Could not launch phone');
   }
 }

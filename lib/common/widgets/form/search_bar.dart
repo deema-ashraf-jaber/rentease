@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:rentease/features/shope/screens/search/search.dart';
 import '../../../utils/constants/colors.dart';
 
 class TSearchBar extends StatelessWidget {
-  const TSearchBar();
+  const TSearchBar({
+    super.key,
+    required this.onChanged,
+  });
+
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +17,6 @@ class TSearchBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 22),
       child: Row(
         children: [
-          // زر الفلتر يمين
           Container(
             width: 54,
             height: 48,
@@ -19,16 +24,22 @@ class TSearchBar extends StatelessWidget {
               color: TColors.PrimaryColor,
               borderRadius: BorderRadius.circular(11),
             ),
-            child: const Icon(
-              Iconsax.setting_4,
+            child: IconButton(
+              onPressed:(){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Search(),
+                  ),
+                );
+              },
               color: Colors.white,
-              size: 24,
+              iconSize: 24, icon: Icon(Iconsax.setting_4),
             ),
           ),
 
           const SizedBox(width: 10),
 
-          // مربع البحث
           Expanded(
             child: Container(
               height: 48,
@@ -49,6 +60,7 @@ class TSearchBar extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextField(
+                      onChanged: onChanged,
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.right,
                       decoration: InputDecoration(
@@ -57,7 +69,7 @@ class TSearchBar extends StatelessWidget {
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
-                        isCollapsed: true,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
                         hintStyle: TextStyle(
                           color: Colors.black.withOpacity(.35),
                           fontSize: 14,
@@ -70,7 +82,7 @@ class TSearchBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 14,),
+                  const SizedBox(width: 14),
                   const Icon(
                     Iconsax.search_normal_1,
                     color: Colors.grey,
@@ -80,7 +92,6 @@ class TSearchBar extends StatelessWidget {
               ),
             ),
           ),
-
         ],
       ),
     );
