@@ -74,7 +74,7 @@ class _TSignupFormState extends State<TSignupForm> {
       //     'password': passwordController.text.trim(),
       //   },
       // );
-      await Supabase.instance.client.auth.signUp(
+      final response = await Supabase.instance.client.auth.signUp(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
         data: {
@@ -82,6 +82,19 @@ class _TSignupFormState extends State<TSignupForm> {
           'phone': phoneController.text.trim(),
         },
       );
+
+      final user = response.user;
+
+      if (user == null) {
+        throw Exception('لم يتم إنشاء المستخدم');
+      }
+
+      await Supabase.instance.client.from('profiles').insert({
+        'id': user.id,
+        'full_name': fullNameController.text.trim(),
+        'email': emailController.text.trim(),
+        'phone': phoneController.text.trim(),
+      });
       Get.snackbar(
         'تم إرسال الرمز',
         'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
