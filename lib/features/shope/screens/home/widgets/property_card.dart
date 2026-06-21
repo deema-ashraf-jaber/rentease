@@ -17,20 +17,22 @@ class PropertyCard extends StatelessWidget {
     required this.baths,
     required this.area,
     required this.description,
-
-    // TODO Supabase:
-    // لاحقاً هاي القيم تيجي من جدول properties
-    // أو من relation مع جدول profiles حسب owner_id
     required this.ownerId,
     required this.ownerName,
     required this.ownerPhone,
-
     this.iconData = Icons.square_foot_outlined,
   });
 
   final String image, title, location, price, beds, baths, area, description;
   final String ownerId, ownerName, ownerPhone;
   final IconData iconData;
+
+  ImageProvider get imageProvider {
+    if (image.startsWith('http')) {
+      return NetworkImage(image);
+    }
+    return AssetImage(image);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,6 @@ class PropertyCard extends StatelessWidget {
                     baths: baths,
                     area: area,
                     description: description,
-
                     ownerId: ownerId,
                     ownerName: ownerName,
                     ownerPhone: ownerPhone,
@@ -79,7 +80,7 @@ class PropertyCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(17),
                     image: DecorationImage(
-                      image: AssetImage(image),
+                      image: imageProvider,
                       fit: BoxFit.cover,
                     ),
                     boxShadow: [
@@ -91,7 +92,6 @@ class PropertyCard extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 Positioned(
                   top: 14,
                   left: 14,
@@ -127,7 +127,6 @@ class PropertyCard extends StatelessWidget {
                     },
                   ),
                 ),
-
                 Positioned(
                   top: 14,
                   right: 14,
@@ -161,9 +160,7 @@ class PropertyCard extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 14),
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -207,9 +204,7 @@ class PropertyCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 15),
-
           Row(
             textDirection: TextDirection.ltr,
             children: [

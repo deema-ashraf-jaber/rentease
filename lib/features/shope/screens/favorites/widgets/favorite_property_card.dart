@@ -34,8 +34,10 @@ class FavoritePropertyCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(12),
                 ),
-                child: Image.asset(
-                  property.image,
+                child:Image(
+                  image: property.image.startsWith('http')
+                      ? NetworkImage(property.image)
+                      : AssetImage(property.image) as ImageProvider,
                   height: 190,
                   width: double.infinity,
                   fit: BoxFit.cover,

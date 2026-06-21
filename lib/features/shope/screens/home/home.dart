@@ -1,18 +1,24 @@
-
 import 'package:flutter/material.dart';
 import 'package:rentease/common/widgets/appbar/appbar.dart';
 import 'package:rentease/common/widgets/form/search_bar.dart';
 import 'package:rentease/features/shope/screens/home/widgets/property_card.dart';
 import 'package:rentease/features/shope/screens/home/widgets/property_categories.dart';
 import 'package:rentease/features/shope/screens/home/widgets/small_property_card.dart';
-import 'package:rentease/utils/constants/image_strings.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/text_strings.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key,this.onAddPressed ,this.onProfilePressed});
-final VoidCallback? onAddPressed;
+  const HomeScreen({
+    super.key,
+    this.onAddPressed,
+    this.onProfilePressed,
+  });
+
+  final VoidCallback? onAddPressed;
   final VoidCallback? onProfilePressed;
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -21,6 +27,7 @@ class PropertyItem {
   final String image, title, location, price, beds, baths, area, description;
   final String ownerId, ownerName, ownerPhone;
   final IconData iconData;
+  final String propertyType;
 
   PropertyItem({
     required this.image,
@@ -34,93 +41,125 @@ class PropertyItem {
     required this.ownerId,
     required this.ownerName,
     required this.ownerPhone,
+    required this.propertyType,
     this.iconData = Icons.square_foot_outlined,
   });
+
+  factory PropertyItem.fromMap(Map<String, dynamic> map) {
+    return PropertyItem(
+      image: (map['image_url'] ?? '').toString(),
+      title: (map['title'] ?? '').toString(),
+      location: (map['location'] ?? '').toString(),
+      price: (map['monthly_price'] ?? '').toString(),
+      beds: (map['bedrooms'] ?? '').toString(),
+      baths: (map['bathrooms'] ?? '').toString(),
+      area: '${map['area'] ?? ''}م²',
+      description: (map['description'] ?? '').toString(),
+      ownerId: (map['owner_id'] ?? '').toString(),
+      ownerName: (map['owner_email'] ?? 'معلن العقار').toString(),
+      ownerPhone: (map['owner_phone'] ?? '').toString(),
+      propertyType: (map['property_type'] ?? '').toString(),
+    );
+  }
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   String searchText = '';
   String selectedCategory = 'الكل';
 
-  final List<PropertyItem> properties = [
-    PropertyItem(
-      image: TImages.apartment1,
-      title: 'شقة عصرية في وسط\nالمدينة',
-      location: 'غزة، حي الرمال',
-      price: '١٥٠٠',
-      beds: '٣',
-      baths: '٢',
-      area: '١٢٠م²',
-      ownerId: 'owner_1',
-      ownerName: 'أحمد العقاد',
-      ownerPhone: '0599999999',
+  bool isLoading = true;
+  List<PropertyItem> properties = [];
 
-      description:
-      'شقة عصرية مجهزة بتصميم مريح ومناسب للعائلات، تقع في وسط المدينة بالقرب من الأسواق والخدمات الأساسية. تتميز بإضاءة طبيعية جيدة ومساحة عملية تجعل السكن فيها مريحاً وسهل الوصول.',
-    ),
-    PropertyItem(
-      image: TImages.apartment2,
-      title: 'فيلا سكنية واسعة للمؤسسات',
-      location: 'غزة، الجلاء',
-      price: '5,000',
-      beds: '5',
-      baths: '4',
-      area: 'متوفر',
-      iconData: Icons.pool,
-      description:
-      'فيلا سكنية واسعة بتصميم أنيق ومساحات كبيرة، مناسبة للعائلات الكبيرة أو المؤسسات. تحتوي على عدد جيد من الغرف والحمامات، وتوفر خصوصية وراحة مع موقع قريب من الخدمات الرئيسية.',
-      ownerId: 'owner_2',
-        ownerName: 'منى محمود',
-        ownerPhone: '0598888888',
-    ),
-  ];
-  bool get showSmallPropertyCard {
+  @override
+  void initState() {
+    super.initState();
+    fetchProperties();
+  }
+
+  Future<void> fetchProperties() async {
+    try {
+      final response = await Supabase.instance.client
+          .from('properties')
+          .select()
+          .order('created_at', ascending: false);
+
+      final items = (response as List)
+          .map((item) => PropertyItem.fromMap(item as Map<String, dynamic>))
+          .toList();
+
+      if (!mounted) return;
+
+      setState(() {
+        properties = items;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'حدث خطأ أثناء تحميل العقارات: $e',
+            textAlign: TextAlign.right,
+          ),
+          backgroundColor: TColors.PrimaryColor,
+        ),
+      );
+    }
+  }
+
+  bool isSmallType(PropertyItem property) {
+    return property.propertyType == 'حاصل' ||
+        property.propertyType == 'استوديو' ||
+        property.propertyType == 'غرفة';
+  }
+
+  bool matchesSearch(PropertyItem property) {
     final query = searchText.trim();
 
-    // إذا اختار شقق أو فيلات لا تعرض الحاصل
-    if (selectedCategory == 'شقق') return false;
-    if (selectedCategory == 'فيلات') return false;
-
-    // إذا اختار حواصل اعرض الحاصل دائماً
-    if (selectedCategory == 'حواصل') return true;
-
-    // إذا اختار الكل
-    if (query.isEmpty) return true;
-
-    return 'حاصل مجهز بالكامل'.contains(query) ||
-        'استوديو'.contains(query) ||
-        'خانيونس، البلد'.contains(query) ||
-        '٧٠٠'.contains(query);
+    return query.isEmpty ||
+        property.title.contains(query) ||
+        property.location.contains(query) ||
+        property.price.contains(query) ||
+        property.area.contains(query) ||
+        property.description.contains(query) ||
+        property.propertyType.contains(query);
   }
+
   @override
   Widget build(BuildContext context) {
-    final filteredProperties = properties.where((property) {
-      final query = searchText.trim();
+    final searchedProperties = properties.where(matchesSearch).toList();
 
-      bool matchesSearch = query.isEmpty ||
-          property.title.contains(query) ||
-          property.location.contains(query) ||
-          property.price.contains(query) ||
-          property.area.contains(query) ||
-          property.description.contains(query);
-
-      bool matchesCategory = true;
+    final bigProperties = searchedProperties.where((property) {
+      if (isSmallType(property)) return false;
 
       if (selectedCategory == 'شقق') {
-        matchesCategory = property.title.contains('شقة');
+        return property.propertyType == 'شقة';
       }
 
-      else if (selectedCategory == 'فيلات') {
-        matchesCategory = property.title.contains('فيلا');
-      }
-      else if (selectedCategory == 'حواصل') {
-        matchesCategory = false;
+      if (selectedCategory == 'فيلات') {
+        return property.propertyType == 'فيلا';
       }
 
-      return matchesSearch && matchesCategory;
+      if (selectedCategory == 'حواصل') {
+        return false;
+      }
+
+      return true;
     }).toList();
 
-    final hasResults = filteredProperties.isNotEmpty || showSmallPropertyCard;
+    final smallProperties = searchedProperties.where((property) {
+      if (!isSmallType(property)) return false;
+
+      if (selectedCategory == 'شقق') return false;
+      if (selectedCategory == 'فيلات') return false;
+
+      return true;
+    }).toList();
+
+    final hasResults = bigProperties.isNotEmpty || smallProperties.isNotEmpty;
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -129,9 +168,9 @@ class _HomeScreenState extends State<HomeScreen> {
           title: TTexts.rentEase,
           actionIcon: Icons.person_2_outlined,
           isBack: false,
-          onActionPressed:(){
+          onActionPressed: () {
             widget.onProfilePressed?.call();
-            },
+          },
         ),
         backgroundColor: Colors.white,
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -141,65 +180,93 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           onPressed: () {
-            if(widget.onAddPressed != null){
-              widget.onAddPressed!();
-            }
+            widget.onAddPressed?.call();
           },
           child: const Icon(Icons.add, color: Colors.white),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 20),
-          child: Column(
-            children: [
-              const SizedBox(height: 8),
-              TSearchBar(
-                onChanged: (value) {
-                  setState(() {
-                    searchText = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 18),
-              PropertyCategories(
-                onCategoryChanged: (category) {
-                  setState(() {
-                    selectedCategory = category;
-                  });
-                },
-              ),
-              const SizedBox(height: 22),
-              if (!hasResults)
-                const Padding(
-                  padding: EdgeInsets.only(top: 40),
-                  child: Text(
-                    'لا توجد نتائج مطابقة',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                    ),
-                  ),
-                )
-              else ...[
-                ...filteredProperties.map(
-                      (property) => PropertyCard(
-                    image: property.image,
-                    title: property.title,
-                    location: property.location,
-                    price: property.price,
-                    beds: property.beds,
-                    baths: property.baths,
-                    area: property.area,
-                    iconData: property.iconData,
-                    description: property.description,
-                    ownerId: property.ownerId,
-                    ownerName: property.ownerName,
-                    ownerPhone: property.ownerPhone,
+        body: RefreshIndicator(
+          onRefresh: fetchProperties,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
+              children: [
+                const SizedBox(height: 8),
 
-                  ),
+                TSearchBar(
+                  onChanged: (value) {
+                    setState(() {
+                      searchText = value;
+                    });
+                  },
                 ),
-                if (showSmallPropertyCard) const SmallPropertyCard(),
+
+                const SizedBox(height: 18),
+
+                PropertyCategories(
+                  onCategoryChanged: (category) {
+                    setState(() {
+                      selectedCategory = category;
+                    });
+                  },
+                ),
+
+                const SizedBox(height: 22),
+
+                if (isLoading)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 60),
+                    child: CircularProgressIndicator(
+                      color: TColors.PrimaryColor,
+                    ),
+                  )
+                else if (!hasResults)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 40),
+                    child: Text(
+                      'لا توجد نتائج مطابقة',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                else ...[
+                    ...bigProperties.map(
+                          (property) => PropertyCard(
+                        image: property.image,
+                        title: property.title,
+                        location: property.location,
+                        price: property.price,
+                        beds: property.beds,
+                        baths: property.baths,
+                        area: property.area,
+                        iconData: property.iconData,
+                        description: property.description,
+                        ownerId: property.ownerId,
+                        ownerName: property.ownerName,
+                        ownerPhone: property.ownerPhone,
+                      ),
+                    ),
+
+                    ...smallProperties.map(
+                          (property) => SmallPropertyCard(
+                        image: property.image,
+                        title: property.title,
+                        location: property.location,
+                        price: property.price,
+                        beds: property.beds,
+                        baths: property.baths,
+                        area: property.propertyType,
+                        description: property.description,
+                        ownerId: property.ownerId,
+                        ownerName: property.ownerName,
+                        ownerPhone: property.ownerPhone,
+                      ),
+                    ),
+                  ],
               ],
-            ],
+            ),
           ),
         ),
       ),

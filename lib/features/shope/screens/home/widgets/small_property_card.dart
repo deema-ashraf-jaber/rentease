@@ -5,29 +5,38 @@ import '../../../../../utils/constants/image_strings.dart';
 import '../property_details_screen/property_details_screen.dart';
 
 class SmallPropertyCard extends StatelessWidget {
-  const SmallPropertyCard({super.key});
+  const SmallPropertyCard({
+    super.key,
+    this.image = TImages.gradient,
+    this.title = 'حاصل مجهز بالكامل',
+    this.location = 'خانيونس، البلد',
+    this.price = '٧٠٠',
+    this.beds = 'لا يوجد',
+    this.baths = 'لا يوجد',
+    this.area = 'استوديو',
+    this.ownerId = 'owner_3',
+    this.ownerName = 'شركة العقارات الحديثة',
+    this.ownerPhone = '0597777777',
+    this.description =
+    'حاصل مجهز بالكامل ومناسب للاستخدام التجاري أو التخزين، يقع في موقع حيوي في خانيونس ويسهل الوصول إليه.',
+  });
+
+  final String image, title, location, price, beds, baths, area;
+  final String ownerId, ownerName, ownerPhone, description;
+
+  ImageProvider get imageProvider {
+    if (image.startsWith('http')) return NetworkImage(image);
+    return AssetImage(image);
+  }
 
   @override
   Widget build(BuildContext context) {
-    const image = TImages.gradient;
-    const title = 'حاصل مجهز بالكامل';
-    const location = 'خانيونس، البلد';
-    const price = '٧٠٠';
-    const beds = 'لا يوجد';
-    const baths = 'لا يوجد';
-    const area = 'استوديو';
-    const ownerId = 'owner_3';
-    const ownerName = 'شركة العقارات الحديثة';
-    const ownerPhone = '0597777777';
-    const description =
-        'حاصل مجهز بالكامل ومناسب للاستخدام التجاري أو التخزين، يقع في موقع حيوي في خانيونس ويسهل الوصول إليه. يتميز بمساحة عملية وتجهيزات مناسبة للاستخدام اليومي مع توفر الخدمات الأساسية بالقرب منه.';
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const PropertyDetailsScreen(
+            builder: (_) => PropertyDetailsScreen(
               image: image,
               title: title,
               location: location,
@@ -75,6 +84,8 @@ class SmallPropertyCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                       color: TColors.PrimaryColor,
                       fontWeight: FontWeight.w700,
@@ -90,10 +101,15 @@ class SmallPropertyCard extends StatelessWidget {
                         size: 15,
                         color: Color(0xff6B7280),
                       ),
-                      Text(
-                        location,
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: const Color(0xff6B7280),
+                      Expanded(
+                        child: Text(
+                          location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                          Theme.of(context).textTheme.labelLarge!.copyWith(
+                            color: const Color(0xff6B7280),
+                          ),
                         ),
                       ),
                     ],
@@ -102,7 +118,7 @@ class SmallPropertyCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '$price ش.إ ',
+                        '$price ش.ج ',
                         style:
                         Theme.of(context).textTheme.headlineSmall!.copyWith(
                           color: const Color(0xff4A6FA5),
@@ -124,11 +140,11 @@ class SmallPropertyCard extends StatelessWidget {
             const SizedBox(width: 14),
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                image,
+              child: Image(
+                image: imageProvider,
                 width: 128,
                 height: 128,
-                fit: BoxFit.contain,
+                fit: BoxFit.cover,
               ),
             ),
           ],

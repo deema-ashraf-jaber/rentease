@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../../utils/constants/colors.dart';
 import '../../../../../../utils/constants/image_strings.dart';
 import '../../../notifications/notifications.dart';
@@ -35,9 +36,34 @@ class DetailsAppBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          const CircleAvatar(
-            radius: 20,
-            backgroundImage: AssetImage(TImages.user),
+           FutureBuilder(
+            future: Supabase.instance.client
+                .from('profiles')
+                .select('profile_image')
+                .eq(
+              'id',
+              Supabase.instance.client.auth.currentUser!.id,
+            )
+                .single(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const CircleAvatar(
+                  radius: 20,
+                );
+              }
+
+              final imageUrl =
+              snapshot.data!['profile_image']?.toString();
+
+              return CircleAvatar(
+                radius: 20,
+                backgroundImage:
+                imageUrl != null && imageUrl.isNotEmpty
+                    ? NetworkImage(imageUrl)
+                    : const AssetImage(TImages.user)
+                as ImageProvider,
+              );
+            },
           ),
           const Spacer(),
           IconButton(

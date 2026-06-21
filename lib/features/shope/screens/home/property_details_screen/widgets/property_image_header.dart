@@ -15,13 +15,20 @@ class PropertyImageHeader extends StatelessWidget {
   final String location;
   final String price;
 
+  ImageProvider get imageProvider {
+    if (image.startsWith('http')) {
+      return NetworkImage(image);
+    }
+    return AssetImage(image);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Image.asset(
-          image,
+        Image(
+          image: imageProvider,
           height: 330,
           width: double.infinity,
           fit: BoxFit.cover,

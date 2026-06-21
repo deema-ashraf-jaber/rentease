@@ -8,26 +8,79 @@ import 'package:rentease/features/shope/screens/profile/widgets/info_card.dart';
 import 'package:rentease/features/shope/screens/profile/widgets/settings_tile.dart';
 import 'package:rentease/features/shope/screens/technicalSupport/technicalSupport.dart';
 import 'package:rentease/features/shope/screens/use/payment_fees_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../common/widgets/appbar/appbar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/image_strings.dart';
 import '../../../authentication/screens/login/login.dart';
 import '../notifications/notifications.dart';
-import 'models/profile_image_manager.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key,this.onSearchPressed});
+  const ProfileScreen({super.key, this.onSearchPressed});
+
   final VoidCallback? onSearchPressed;
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Uint8List? selectedProfileImageBytes;
-  String? selectedProfileImageName;
+  String fullName = '';
+  String email = '';
+  String? profileImageUrl;
+
+  bool isLoading = true;
+  bool isUploadingImage = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfile();
+  }
+
+  Future<void> fetchProfile() async {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user == null) {
+      setState(() => isLoading = false);
+      return;
+    }
+
+    try {
+      final data = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .single();
+
+      if (!mounted) return;
+
+      setState(() {
+        fullName = (data['full_name'] ?? '').toString();
+        email = (data['email'] ?? user.email ?? '').toString();
+        profileImageUrl = data['profile_image']?.toString();
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        fullName = 'مستخدم RentEase';
+        email = user.email ?? '';
+        isLoading = false;
+      });
+    }
+  }
 
   Future<void> pickProfileImage() async {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user == null) {
+      showMessage('يجب تسجيل الدخول أولاً');
+      return;
+    }
+
     final picker = ImagePicker();
 
     final pickedImage = await picker.pickImage(
@@ -37,49 +90,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (pickedImage == null) return;
 
-    final bytes = await pickedImage.readAsBytes();
+    try {
+      setState(() => isUploadingImage = true);
 
-    ProfileImageManager.updateImage(
-      bytes: bytes,
-      name: pickedImage.name,
-    );
+      final bytes = await pickedImage.readAsBytes();
+      final fileExt = pickedImage.name.split('.').last;
+      final fileName =
+          '${user.id}_${DateTime.now().millisecondsSinceEpoch}.$fileExt';
 
-    // TODO Supabase Storage:
-    // لاحقاً هنا نرفع صورة البروفايل على Supabase Storage.
-    //
-    // final fileName =
-    //     '${DateTime.now().millisecondsSinceEpoch}_$selectedProfileImageName';
-    //
-    // await Supabase.instance.client.storage
-    //     .from('profile-images')
-    //     .uploadBinary(fileName, selectedProfileImageBytes!);
-    //
-    // final imageUrl = Supabase.instance.client.storage
-    //     .from('profile-images')
-    //     .getPublicUrl(fileName);
-    //
-    // TODO Supabase Database:
-    // بعد ما نجيب imageUrl نحفظه في جدول users أو profiles:
-    //
-    // await Supabase.instance.client
-    //     .from('profiles')
-    //     .update({
-    //       'avatar_url': imageUrl,
-    //       'updated_at': DateTime.now().toIso8601String(),
-    //     })
-    //     .eq('id', Supabase.instance.client.auth.currentUser!.id);
-    //
-    // ملاحظة:
-    // عند فتح التطبيق لاحقاً نقرأ avatar_url من Supabase
-    // ونستخدم Image.network بدل الصورة الافتراضية.
+      await Supabase.instance.client.storage
+          .from('profile-images')
+          .uploadBinary(
+        fileName,
+        bytes,
+        fileOptions: const FileOptions(
+          cacheControl: '3600',
+          upsert: false,
+        ),
+      );
+
+      final imageUrl = Supabase.instance.client.storage
+          .from('profile-images')
+          .getPublicUrl(fileName);
+
+      await Supabase.instance.client.from('profiles').update({
+        'profile_image': imageUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', user.id);
+
+      if (!mounted) return;
+
+      setState(() {
+        profileImageUrl = imageUrl;
+      });
+
+      showMessage('تم تحديث صورة الملف الشخصي');
+    } on StorageException catch (e) {
+      showMessage('خطأ في رفع الصورة: ${e.message}');
+    } on PostgrestException catch (e) {
+      showMessage('خطأ في حفظ الصورة: ${e.message}');
+    } catch (e) {
+      showMessage('حدث خطأ غير متوقع');
+    } finally {
+      if (mounted) {
+        setState(() => isUploadingImage = false);
+      }
+    }
   }
 
   ImageProvider get profileImageProvider {
-    if (selectedProfileImageBytes != null) {
-      return MemoryImage(selectedProfileImageBytes!);
+    if (profileImageUrl != null && profileImageUrl!.isNotEmpty) {
+      return NetworkImage(profileImageUrl!);
     }
 
     return const AssetImage(TImages.userProfile);
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, textAlign: TextAlign.right),
+        backgroundColor: TColors.PrimaryColor,
+      ),
+    );
+  }
+
+  Future<void> logout() async {
+    await Supabase.instance.client.auth.signOut();
+
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+          (route) => false,
+    );
   }
 
   @override
@@ -94,8 +181,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>  NotificationsScreen(
-                onSearchPressed: (){
+              builder: (context) => NotificationsScreen(
+                onSearchPressed: () {
                   Navigator.pop(context);
                   widget.onSearchPressed?.call();
                 },
@@ -104,7 +191,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         },
       ),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? const Center(
+        child: CircularProgressIndicator(
+          color: TColors.PrimaryColor,
+        ),
+      )
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
@@ -122,21 +215,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: 4,
                       ),
                     ),
-                    child: ValueListenableBuilder<Uint8List?>(
-                      valueListenable: ProfileImageManager.profileImageBytes,
-                      builder: (context, imageBytes, _) {
-                        return CircleAvatar(
-                          radius: 58,
-                          backgroundImage: imageBytes != null
-                              ? MemoryImage(imageBytes)
-                              : const AssetImage(TImages.userProfile) as ImageProvider,
-                        );
-                      },
+                    child: CircleAvatar(
+                      radius: 58,
+                      backgroundImage: profileImageProvider,
                     ),
                   ),
 
                   GestureDetector(
-                    onTap: pickProfileImage,
+                    onTap: isUploadingImage ? null : pickProfileImage,
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -145,10 +231,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           width: 4,
                         ),
                       ),
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 16,
                         backgroundColor: TColors.PrimaryColor,
-                        child: Icon(
+                        child: isUploadingImage
+                            ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                            : const Icon(
                           Icons.edit,
                           size: 16,
                           color: Colors.white,
@@ -162,7 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
 
               Text(
-                'رغدة جمال',
+                fullName.isEmpty ? 'مستخدم RentEase' : fullName,
                 style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -171,7 +266,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
 
               Text(
-                'raghda@example.com',
+                email,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: const Color(0xff747781),
                 ),
@@ -179,19 +274,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: 24),
 
-              const Row(
+              Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                     child: InfoCard(
                       value: '٤.٨',
                       label: 'التقييم',
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
-                    child: InfoCard(
-                      value: '١٢',
-                      label: 'عقاراتي',
+                    child: FutureBuilder(
+                      future: Supabase.instance.client
+                          .from('properties')
+                          .select('id')
+                          .eq(
+                        'owner_id',
+                        Supabase.instance.client.auth.currentUser!.id,
+                      ),
+                      builder: (context, snapshot) {
+                        String count = '0';
+
+                        if (snapshot.hasData) {
+                          count = (snapshot.data as List).length.toString();
+                        }
+
+                        return InfoCard(
+                          value: count,
+                          label: 'عقاراتي',
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -240,9 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-
                     const TDivider(),
-
                     SettingsTile(
                       title: 'الإشعارات',
                       icon: Icons.notifications_none,
@@ -250,8 +360,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>  NotificationsScreen(
-                              onSearchPressed: (){
+                            builder: (context) => NotificationsScreen(
+                              onSearchPressed: () {
                                 Navigator.pop(context);
                                 widget.onSearchPressed?.call();
                               },
@@ -260,9 +370,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
-
                     const TDivider(),
-
                     SettingsTile(
                       title: 'المحادثات',
                       icon: Icons.chat_bubble_outline,
@@ -276,9 +384,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
-
                     const TDivider(),
-
                     SettingsTile(
                       title: 'الدعم الفني',
                       icon: Icons.support_agent,
@@ -292,9 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
-
                     const TDivider(),
-
                     SettingsTile(
                       title: 'الرسوم ولمدفوعات',
                       icon: Icons.account_balance_wallet,
@@ -302,7 +406,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PaymentFeesScreen(),
+                            builder: (context) =>
+                            const PaymentFeesScreen(),
                           ),
                         );
                       },
@@ -315,22 +420,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               InkWell(
                 borderRadius: BorderRadius.circular(24),
-                onTap: () {
-                  // TODO Supabase:
-                  // لاحقاً عند ربط Supabase نضيف:
-                  // await Supabase.instance.client.auth.signOut();
-
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                        (route) => false,
-                  );
-                },
+                onTap: logout,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFEFEF),
                     borderRadius: BorderRadius.circular(24),
@@ -340,7 +436,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Text(
                         'تسجيل الخروج',
-                        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall!
+                            .copyWith(
                           color: const Color(0xffBA1A1A),
                           fontWeight: FontWeight.w700,
                         ),

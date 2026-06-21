@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +6,7 @@ import 'package:rentease/features/shope/screens/addProperty/widgets/custom_input
 import 'package:rentease/features/shope/screens/addProperty/widgets/field_title.dart';
 import 'package:rentease/features/shope/screens/addProperty/widgets/property_steps.dart';
 import 'package:rentease/features/shope/screens/addProperty/widgets/upload_images_box.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../bottom_navigation.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/image_strings.dart';
@@ -27,6 +27,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   final locationController = TextEditingController();
   final descriptionController = TextEditingController();
 
+  final bedroomsController = TextEditingController();
+  final bathroomsController = TextEditingController();
+  final areaController = TextEditingController();
+  final ownerPhoneController = TextEditingController();
+  final ownerEmailController = TextEditingController();
+
   final List<String> propertyTypes = [
     'شقة',
     'فيلا',
@@ -36,6 +42,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   ];
 
   String selectedType = 'شقة';
+  bool hasParking = false;
 
   File? selectedImageFile;
   Uint8List? selectedImageBytes;
@@ -62,22 +69,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       selectedImageFile = kIsWeb ? null : File(pickedImage.path);
       activeStep = 2;
     });
-
-    // TODO Supabase Storage:
-    // لاحقاً هنا نرفع الصورة على Supabase Storage.
-    // final fileName =
-    //     '${DateTime.now().millisecondsSinceEpoch}_$selectedImageName';
-    //
-    // await Supabase.instance.client.storage
-    //     .from('property-images')
-    //     .uploadBinary(fileName, selectedImageBytes!);
-    //
-    // final imageUrl = Supabase.instance.client.storage
-    //     .from('property-images')
-    //     .getPublicUrl(fileName);
   }
-
-
 
   Future<void> submitProperty() async {
     final title = titleController.text.trim();
@@ -85,67 +77,113 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     final location = locationController.text.trim();
     final description = descriptionController.text.trim();
 
+    final bedrooms = bedroomsController.text.trim();
+    final bathrooms = bathroomsController.text.trim();
+    final area = areaController.text.trim();
+    final ownerPhone = ownerPhoneController.text.trim();
+    final ownerEmail = ownerEmailController.text.trim();
+
     if (selectedImageBytes == null) {
       showMessage('الرجاء تحميل صورة للعقار');
       return;
     }
 
-    if (title.isEmpty || price.isEmpty || location.isEmpty || description.isEmpty) {
+    if (title.isEmpty ||
+        price.isEmpty ||
+        location.isEmpty ||
+        description.isEmpty ||
+        bedrooms.isEmpty ||
+        bathrooms.isEmpty ||
+        area.isEmpty ||
+        ownerPhone.isEmpty ||
+        ownerEmail.isEmpty) {
       showMessage('الرجاء تعبئة جميع الحقول');
       return;
     }
 
-    setState(() {
-      activeStep = 4;
-      isLoading = true;
-    });
+    final user = Supabase.instance.client.auth.currentUser;
 
-    await Future.delayed(const Duration(milliseconds: 700));
+    if (user == null) {
+      showMessage('يجب تسجيل الدخول أولاً');
+      return;
+    }
 
-    // TODO Supabase Storage + Database:
-    // final fileName =
-    //     '${DateTime.now().millisecondsSinceEpoch}_$selectedImageName';
-    //
-    // await Supabase.instance.client.storage
-    //     .from('property-images')
-    //     .uploadBinary(fileName, selectedImageBytes!);
-    //
-    // final imageUrl = Supabase.instance.client.storage
-    //     .from('property-images')
-    //     .getPublicUrl(fileName);
-    //
-    // await Supabase.instance.client.from('properties').insert({
-    //   'title': title,
-    //   'property_type': selectedType,
-    //   'annual_price': price,
-    //   'location': location,
-    //   'description': description,
-    //   'image_url': imageUrl,
-    //   'status': 'pending',
-    //   'created_at': DateTime.now().toIso8601String(),
-    //   // 'owner_id': Supabase.instance.client.auth.currentUser!.id,
-    // });
+    try {
+      setState(() {
+        activeStep = 4;
+        isLoading = true;
+      });
 
-    setState(() {
-      isLoading = false;
-    });
+      final fileExt = selectedImageName?.split('.').last ?? 'jpg';
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${user.id}.$fileExt';
 
-    showMessage('تم إرسال طلب العقار للمراجعة بنجاح');
+      await Supabase.instance.client.storage
+          .from('property-images')
+          .uploadBinary(
+        fileName,
+        selectedImageBytes!,
+        fileOptions: const FileOptions(
+          cacheControl: '3600',
+          upsert: false,
+        ),
+      );
 
-    titleController.clear();
-    priceController.clear();
-    locationController.clear();
-    descriptionController.clear();
+      final imageUrl = Supabase.instance.client.storage
+          .from('property-images')
+          .getPublicUrl(fileName);
 
-    setState(() {
-      selectedImageFile = null;
-      selectedImageBytes = null;
-      selectedImageName = null;
-      selectedType = 'شقة';
-      activeStep = 1;
-    });
+      await Supabase.instance.client.from('properties').insert({
+        'owner_id': user.id,
+        'title': title,
+        'property_type': selectedType,
+        'location': location,
+        'monthly_price': double.parse(price),
+        'bedrooms': int.parse(bedrooms),
+        'bathrooms': int.parse(bathrooms),
+        'area': double.parse(area),
+        'has_parking': hasParking,
+        'description': description,
+        'image_url': imageUrl,
+        'owner_phone': ownerPhone,
+        'owner_email': ownerEmail,
+        'status': 'pending',
+      });
+
+      showMessage('تم إرسال طلب العقار للمراجعة بنجاح');
+
+      titleController.clear();
+      priceController.clear();
+      locationController.clear();
+      descriptionController.clear();
+      bedroomsController.clear();
+      bathroomsController.clear();
+      areaController.clear();
+      ownerPhoneController.clear();
+      ownerEmailController.clear();
+
+      setState(() {
+        selectedImageFile = null;
+        selectedImageBytes = null;
+        selectedImageName = null;
+        selectedType = 'شقة';
+        hasParking = false;
+        activeStep = 1;
+      });
+    } on StorageException catch (e) {
+      showMessage('خطأ في رفع الصورة: ${e.message}');
+    } on PostgrestException catch (e) {
+      showMessage('خطأ في حفظ العقار: ${e.message}');
+    } catch (e) {
+      showMessage('حدث خطأ غير متوقع: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
-
   void showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -161,6 +199,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     priceController.dispose();
     locationController.dispose();
     descriptionController.dispose();
+    bedroomsController.dispose();
+    bathroomsController.dispose();
+    areaController.dispose();
+    ownerPhoneController.dispose();
+    ownerEmailController.dispose();
     super.dispose();
   }
 
@@ -206,12 +249,41 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               color: TColors.PrimaryColor,
             ),
           ),
-          actions: const [
+          actions: [
             Padding(
-              padding: EdgeInsets.only(left: 40),
-              child: CircleAvatar(
-                backgroundColor: Color(0xffE8D8C8),
-                child: Image(image: AssetImage(TImages.user)),
+              padding: const EdgeInsets.only(left: 40),
+              child: FutureBuilder(
+                future: Supabase.instance.client
+                    .from('profiles')
+                    .select('profile_image')
+                    .eq(
+                  'id',
+                  Supabase.instance.client.auth.currentUser!.id,
+                )
+                    .single(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircleAvatar(
+                      backgroundColor: Color(0xffE8D8C8),
+                      child: Icon(
+                        Icons.person,
+                        color: TColors.PrimaryColor,
+                      ),
+                    );
+                  }
+
+                  final imageUrl =
+                  snapshot.data!['profile_image']?.toString();
+
+                  return CircleAvatar(
+                    backgroundColor: const Color(0xffE8D8C8),
+                    backgroundImage:
+                    imageUrl != null && imageUrl.isNotEmpty
+                        ? NetworkImage(imageUrl)
+                        : const AssetImage(TImages.user)
+                    as ImageProvider,
+                  );
+                },
               ),
             ),
           ],
@@ -222,13 +294,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Divider(height: 1, color: Color(0xffF5F5F5)),
             ),
-
             Container(
               color: Colors.white,
               padding: const EdgeInsets.fromLTRB(24, 30, 24, 20),
               child: PropertySteps(activeStep: activeStep),
             ),
-
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -242,7 +312,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                       child: Text(
                         "إضافة عقار جديد",
                         textAlign: TextAlign.right,
-                        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        style:
+                        Theme.of(context).textTheme.headlineLarge!.copyWith(
                           color: TColors.PrimaryColor,
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
@@ -309,23 +380,87 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                           }).toList(),
                           onChanged: (value) {
                             if (value == null) return;
-
                             setState(() {
                               selectedType = value;
                             });
-                            },
+                          },
                         ),
                       ),
                     ),
 
                     const SizedBox(height: 22),
 
-                    const FieldTitle("السعر السنوي (شيكل)"),
+                    const FieldTitle("السعر الشهري (شيكل)"),
                     CustomInput(
-                      hint: "00,000",
+                      hint: "مثال: 1200",
                       controller: priceController,
                       keyboardType: TextInputType.number,
-                        onTap: () => setState(() => activeStep = 1)
+                      onTap: () => setState(() => activeStep = 1),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    const FieldTitle("عدد الغرف"),
+                    CustomInput(
+                      hint: "مثال: 3",
+                      controller: bedroomsController,
+                      keyboardType: TextInputType.number,
+                      onTap: () => setState(() => activeStep = 1),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    const FieldTitle("عدد الحمامات"),
+                    CustomInput(
+                      hint: "مثال: 2",
+                      controller: bathroomsController,
+                      keyboardType: TextInputType.number,
+                      onTap: () => setState(() => activeStep = 1),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    const FieldTitle("المساحة (م²)"),
+                    CustomInput(
+                      hint: "مثال: 120",
+                      controller: areaController,
+                      keyboardType: TextInputType.number,
+                      onTap: () => setState(() => activeStep = 1),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    const FieldTitle("موقف سيارات"),
+                    Container(
+                      height: 56,
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: greyBg,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      child: Row(
+                        children: [
+                          Switch(
+                            value: hasParking,
+                            activeColor: TColors.PrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                hasParking = value;
+                              });
+                            },
+                          ),
+                          const Spacer(),
+                          Text(
+                            hasParking ? "متوفر" : "غير متوفر",
+                            style: const TextStyle(
+                              color: Color(0xff303030),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
 
                     const SizedBox(height: 22),
@@ -335,7 +470,27 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                       hint: "ابحث عن المدينة أو الحي",
                       icon: Icons.location_on_outlined,
                       controller: locationController,
-                        onTap: () => setState(() => activeStep = 3)
+                      onTap: () => setState(() => activeStep = 3),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    const FieldTitle("رقم المعلن"),
+                    CustomInput(
+                      hint: "+970 59 000 0000",
+                      controller: ownerPhoneController,
+                      keyboardType: TextInputType.phone,
+                      onTap: () => setState(() => activeStep = 3),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    const FieldTitle("بريد المعلن"),
+                    CustomInput(
+                      hint: "owner@example.com",
+                      controller: ownerEmailController,
+                      keyboardType: TextInputType.emailAddress,
+                      onTap: () => setState(() => activeStep = 3),
                     ),
 
                     const SizedBox(height: 22),
@@ -356,10 +511,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                         textAlign: TextAlign.right,
                         textAlignVertical: TextAlignVertical.top,
                         decoration: InputDecoration(
-                          hintText: "اكتب تفاصيل إضافية عن العقار والمميزات...",
+                          hintText:
+                          "اكتب تفاصيل إضافية عن العقار والمميزات...",
                           border: InputBorder.none,
-                          hintStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: const Color(0xff6B728080).withOpacity(0.50),
+                          hintStyle:
+                          Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: const Color(0xff6B728080)
+                                .withOpacity(0.50),
                           ),
                         ),
                       ),
