@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:rentease/features/authentication/screens/login/success_screen/success_screen.dart';
 
 import '../../../../../common/widgets/appbar/appbar.dart';
@@ -10,20 +12,24 @@ import 'widgets/reset_password_header.dart';
 import 'widgets/update_password_button.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+  const ResetPasswordScreen({
+    super.key,
+    required this.email,
+  });
+
+  final String email;
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
-
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-  TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -32,7 +38,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     super.dispose();
   }
 
-  void _updatePassword() {
+  Future<void> _updatePassword() async {
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
@@ -64,18 +70,30 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       return;
     }
 
-    // TODO Supabase:
-    // لاحقاً هنا نضيف كود تحديث كلمة المرور:
-    // await Supabase.instance.client.auth.updateUser(
-    //   UserAttributes(password: password),
-    // );
+    try {
+      setState(() => isLoading = true);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SuccessScreen(),
-      ),
-    );
+      // موقوف مؤقتًا:
+      // هذا الكود يحتاج أن يكون المستخدم داخل جلسة Recovery بعد التحقق من كود Supabase.
+      /*
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(password: password),
+      );
+      */
+
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SuccessScreen(),
+        ),
+      );
+    } catch (e) {
+      _showMessage('حدث خطأ أثناء تحديث كلمة المرور');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   void _showMessage(String message) {
@@ -102,9 +120,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 48),
-
               const ResetPasswordHeader(),
-
               const SizedBox(height: 32),
 
               PasswordInputField(
@@ -134,17 +150,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
 
               const SizedBox(height: 24),
-
               const PasswordRulesBox(),
-
               const SizedBox(height: 134),
 
               UpdatePasswordButton(
-                onPressed: _updatePassword,
+                onPressed: isLoading ? null : _updatePassword,
               ),
 
               const SizedBox(height: 23),
-
               const PasswordSupportRow(),
             ],
           ),

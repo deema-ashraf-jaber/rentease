@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:rentease/features/authentication/screens/login/login.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';
@@ -25,7 +26,6 @@ class _TSignupFormState extends State<TSignupForm> {
   bool isLoading = false;
   bool acceptTerms = false;
   bool hidePassword = true;
-  bool hideConfirmPassword = true;
 
   @override
   void dispose() {
@@ -51,8 +51,6 @@ class _TSignupFormState extends State<TSignupForm> {
     );
   }
 
-
-
   Future<void> signup() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -68,11 +66,15 @@ class _TSignupFormState extends State<TSignupForm> {
     try {
       setState(() => isLoading = true);
 
-      // هون بعد ما نربط Supabase رح نستخدم هذا الكود:
-      /*
-      final supabase = Supabase.instance.client;
-
-      final response = await supabase.auth.signUp(
+      // await Supabase.instance.client.auth.signInWithOtp(
+      //   email: emailController.text.trim(),
+      //   data: {
+      //     'full_name': fullNameController.text.trim(),
+      //     'phone': phoneController.text.trim(),
+      //     'password': passwordController.text.trim(),
+      //   },
+      // );
+      await Supabase.instance.client.auth.signUp(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
         data: {
@@ -80,20 +82,28 @@ class _TSignupFormState extends State<TSignupForm> {
           'phone': phoneController.text.trim(),
         },
       );
+      Get.snackbar(
+        'تم إرسال الرمز',
+        'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
+        snackPosition: SnackPosition.BOTTOM,
+      );
 
-      final userId = response.user?.id;
+      // Get.to(
+      //       () => VerifyEmailScreen(
+      //     email: emailController.text.trim(),
+      //     password: passwordController.text.trim(),
+      //     fullName: fullNameController.text.trim(),
+      //     phone: phoneController.text.trim(),
+      //   ),
+      // );
 
-      if (userId != null) {
-        await supabase.from('profiles').insert({
-          'id': userId,
-          'full_name': fullNameController.text.trim(),
-          'email': emailController.text.trim(),
-          'phone': phoneController.text.trim(),
-        });
-      }
-      */
-
-      Get.to(() => const VerifyEmailScreen());
+      Get.offAll(()  => const LoginScreen());
+    } on AuthException catch (e) {
+      Get.snackbar(
+        'خطأ',
+        e.message,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
       Get.snackbar(
         'خطأ',
@@ -210,9 +220,6 @@ class _TSignupFormState extends State<TSignupForm> {
             },
           ),
 
-
-
-
           const SizedBox(height: TSizes.spaceBtwItems),
 
           Row(
@@ -257,7 +264,7 @@ class _TSignupFormState extends State<TSignupForm> {
               )
                   : const Icon(Icons.arrow_back),
               label: Text(
-                isLoading ? "جاري إنشاء الحساب..." : "إنشاء حساب",
+                isLoading ? "جاري إرسال الرمز..." : "إنشاء حساب",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

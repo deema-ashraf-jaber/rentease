@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../bottom_navigation.dart';
 import '../../../../../utils/constants/colors.dart';
@@ -33,8 +34,10 @@ class _TLoginFormState extends State<TLoginForm> {
     setState(() => isLoading = true);
 
     try {
-      // هون لاحقاً بنحط كود Supabase
-      await Future.delayed(const Duration(seconds: 1));
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
 
       if (!mounted) return;
 
@@ -44,9 +47,13 @@ class _TLoginFormState extends State<TLoginForm> {
           builder: (context) => const BottomNavigationScreen(),
         ),
       );
+    } on AuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ: $e')),
+        const SnackBar(content: Text('حدث خطأ أثناء تسجيل الدخول')),
       );
     } finally {
       if (mounted) setState(() => isLoading = false);
@@ -166,9 +173,7 @@ class _TLoginFormState extends State<TLoginForm> {
                   setState(() => hidePassword = !hidePassword);
                 },
                 icon: Icon(
-                  hidePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility,
+                  hidePassword ? Icons.visibility_off : Icons.visibility,
                   color: Colors.grey,
                 ),
               ),

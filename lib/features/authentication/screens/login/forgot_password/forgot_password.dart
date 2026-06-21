@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:rentease/features/authentication/screens/login/confirm_code/confirm_code.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../../../../../utils/constants/colors.dart';
@@ -16,6 +18,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final emailController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -23,7 +26,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void sendCode() {
+  Future<void> sendCode() async {
     final email = emailController.text.trim();
 
     if (email.isEmpty) {
@@ -39,12 +42,36 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ConfirmCodeScreen(email: email),
-      ),
-    );
+    try {
+      setState(() => isLoading = true);
+
+      // موقوف مؤقتًا عشان ما نستهلك Rate Limit تبع Supabase Email.
+      /*
+      await Supabase.instance.client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'http://localhost:5000',
+      );
+      */
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConfirmCodeScreen(email: email),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'حدث خطأ أثناء إرسال رمز التحقق',
+            textAlign: TextAlign.right,
+          ),
+          backgroundColor: TColors.PrimaryColor,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -65,7 +92,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
               const SizedBox(height: 48),
 
-              SendCodeButton(onPressed: sendCode),
+              SendCodeButton(onPressed: isLoading ? null : sendCode),
 
               const SizedBox(height: 48),
               const BackToLoginSection(),

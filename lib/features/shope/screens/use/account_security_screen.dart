@@ -94,7 +94,7 @@ class AccountSecurityScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ResetPasswordScreen(),
+                      builder: (context) => const ResetPasswordScreen(email: '',),
                     ),
                   );
                 },
