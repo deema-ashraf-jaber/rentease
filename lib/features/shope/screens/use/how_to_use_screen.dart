@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:rentease/bottom_navigation.dart';
+import 'package:rentease/features/shope/screens/chats/support_chat_helper.dart';
 import 'package:rentease/features/shope/screens/search/search.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../utils/constants/image_strings.dart';
 import '../chats/models/chat_model.dart';
@@ -374,30 +376,7 @@ class _SupportCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(7),
                 ),
               ),
-              onPressed: () {
-                const supportChat = ChatModel(
-                  name: 'الدعم الفني',
-                  lastMessage: 'مرحباً، كيف يمكننا مساعدتك اليوم؟',
-                  time: 'الآن',
-                  isOnline: true,
-                  isCompany: true,
-                  messages: [
-                    ChatMessageModel(
-                      text:
-                      'مرحباً بك في دعم RentEase، كيف يمكننا مساعدتك اليوم؟',
-                      isSender: true,
-                      time: 'الآن',
-                    ),
-                  ],
-                );
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const OneChatsScreen(chat: supportChat),
-                  ),
-                );
-              },
+              onPressed:(){ SupportChatHelper.openSupportChat(context);},
               child: const Text(
                 "مركز المساعدة",
                 style: TextStyle(

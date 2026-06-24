@@ -15,6 +15,7 @@ class SmallPropertyCard extends StatelessWidget {
     this.baths = 'لا يوجد',
     this.area = 'استوديو',
     this.ownerId = 'owner_3',
+    this.propertyId = '',
     this.ownerName = 'شركة العقارات الحديثة',
     this.ownerPhone = '0597777777',
     this.description =
@@ -22,7 +23,7 @@ class SmallPropertyCard extends StatelessWidget {
   });
 
   final String image, title, location, price, beds, baths, area;
-  final String ownerId, ownerName, ownerPhone, description;
+  final String ownerId, ownerName, ownerPhone, description , propertyId;
 
   ImageProvider get imageProvider {
     if (image.startsWith('http')) return NetworkImage(image);
@@ -40,6 +41,7 @@ class SmallPropertyCard extends StatelessWidget {
               image: image,
               title: title,
               location: location,
+              propertyId: propertyId,
               price: price,
               beds: beds,
               baths: baths,

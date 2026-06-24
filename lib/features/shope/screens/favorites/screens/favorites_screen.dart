@@ -14,6 +14,11 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    FavoriteManager.loadFavorites();
+  }
   bool sortLowToHigh = true;
 
   int _priceNumber(String price) {

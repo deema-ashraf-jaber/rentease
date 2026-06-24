@@ -8,6 +8,7 @@ import 'package:rentease/utils/constants/image_strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../chats/models/chat_model.dart';
 import '../chats/one_chats/one_chats.dart';
+import '../chats/support_chat_helper.dart';
 import '../support/technical_support_screen.dart';
 import '../use/account_security_screen.dart';
 import '../use/how_to_use_screen.dart';
@@ -119,30 +120,10 @@ class TechnicalSupportScreen extends StatelessWidget {
                 title: 'محادثة مباشرة',
                 icon: Icons.chat_outlined,
                 isSelected: true,
-                onPressed: () {
-                  const supportChat = ChatModel(
-                    name: 'الدعم الفني',
-                    lastMessage: 'مرحباً، كيف يمكننا مساعدتك اليوم؟',
-                    time: 'الآن',
-                    isOnline: true,
-                    isCompany: true,
-                    messages: [
-                      ChatMessageModel(
-                        text:
-                        'مرحباً بك في دعم RentEase، كيف يمكننا مساعدتك اليوم؟',
-                        isSender: true,
-                        time: 'الآن',
-                      ),
-                    ],
-                  );
+                onPressed:(){
+                  SupportChatHelper.openSupportChat(context);
+                  },
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const OneChatsScreen(chat: supportChat),
-                    ),
-                  );
-                },
               ),
 
               const SizedBox(height: 16.26),

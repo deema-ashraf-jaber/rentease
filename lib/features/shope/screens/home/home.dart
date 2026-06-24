@@ -27,7 +27,7 @@ class PropertyItem {
   final String image, title, location, price, beds, baths, area, description;
   final String ownerId, ownerName, ownerPhone;
   final IconData iconData;
-  final String propertyType;
+  final String propertyType , id;
 
   PropertyItem({
     required this.image,
@@ -42,6 +42,7 @@ class PropertyItem {
     required this.ownerName,
     required this.ownerPhone,
     required this.propertyType,
+    required this.id ,
     this.iconData = Icons.square_foot_outlined,
   });
 
@@ -59,6 +60,7 @@ class PropertyItem {
       ownerName: (map['owner_email'] ?? 'معلن العقار').toString(),
       ownerPhone: (map['owner_phone'] ?? '').toString(),
       propertyType: (map['property_type'] ?? '').toString(),
+      id:  (map['id'] ?? '').toString()
     );
   }
 }
@@ -246,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ownerId: property.ownerId,
                         ownerName: property.ownerName,
                         ownerPhone: property.ownerPhone,
+                        propertyId: property.id
                       ),
                     ),
 
@@ -262,7 +265,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ownerId: property.ownerId,
                         ownerName: property.ownerName,
                         ownerPhone: property.ownerPhone,
-                      ),
+                        propertyId: property.id
+                          ),
                     ),
                   ],
               ],

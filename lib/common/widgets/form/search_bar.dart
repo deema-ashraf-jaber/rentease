@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:rentease/bottom_navigation.dart';
 import 'package:rentease/features/shope/screens/search/search.dart';
 import '../../../utils/constants/colors.dart';
 
@@ -29,7 +30,7 @@ class TSearchBar extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Search(),
+                    builder: (context) => const BottomNavigationScreen(initialIndex:2 ,),
                   ),
                 );
               },

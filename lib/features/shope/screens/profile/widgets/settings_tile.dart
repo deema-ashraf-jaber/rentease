@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../utils/constants/colors.dart';
 
 class SettingsTile extends StatelessWidget {
@@ -10,6 +9,7 @@ class SettingsTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const SettingsTile({
+    super.key,
     required this.title,
     required this.icon,
     this.trailing,
@@ -20,11 +20,7 @@ class SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 6,
-      ),
-
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
       leading: trailing ??
           SizedBox(
             width: 40,
@@ -32,25 +28,20 @@ class SettingsTile extends StatelessWidget {
               clipBehavior: Clip.none,
               alignment: Alignment.centerLeft,
               children: [
-                const Icon(
-                  Icons.arrow_back_ios_new,
-                  size: 16,
-                  color: Color(0xff747781),
-                ),
-
-                if (badgeCount != null)
+                const Icon(Icons.arrow_back_ios_new, size: 16, color: Color(0xff747781)),
+                if (badgeCount != null && badgeCount! > 0)
                   Positioned(
                     right: 0,
                     child: Container(
                       width: 23.5,
                       height: 19,
                       alignment: Alignment.center,
-                      decoration:  BoxDecoration(
-                          color: const Color(0xffBA1A1A),
-                          borderRadius: BorderRadius.circular(999)
+                      decoration: BoxDecoration(
+                        color: const Color(0xffBA1A1A),
+                        borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
-                        '٣',
+                        badgeCount.toString(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -62,30 +53,21 @@ class SettingsTile extends StatelessWidget {
               ],
             ),
           ),
-
       title: Text(
         title,
         textAlign: TextAlign.right,
-        style: Theme.of(context)
-            .textTheme
-            .titleSmall!
-            .copyWith(
+        style: Theme.of(context).textTheme.titleSmall!.copyWith(
           color: const Color(0xff1A1B1F),
         ),
       ),
-
       trailing: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: const Color(0xffF1F5F9),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          icon,
-          color: TColors.PrimaryColor,
-        ),
+        child: Icon(icon, color: TColors.PrimaryColor),
       ),
-
       onTap: onTap,
     );
   }

@@ -21,6 +21,7 @@ class PropertyDetailsScreen extends StatelessWidget {
     required this.ownerId,
     required this.ownerName,
     required this.ownerPhone,
+    required this.propertyId,
   });
 
   final String image;
@@ -34,6 +35,7 @@ class PropertyDetailsScreen extends StatelessWidget {
   final String ownerId;
   final String ownerName;
   final String ownerPhone;
+  final String propertyId;
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +44,24 @@ class PropertyDetailsScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         bottomNavigationBar: BottomContactBar(
+          propertyId: propertyId,
           ownerId: ownerId, ownerName: ownerName, ownerPhone:ownerPhone, propertyTitle: title,
         ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const DetailsAppBar(),
+                 DetailsAppBar(
+                    image: image,
+                    title: title,
+                    location: location,
+                    price: price,
+                    beds: beds,
+                    baths: baths,
+                    area: area,
+                    description: description,
+                    ownerPhone: ownerPhone,
+                  ),
                 PropertyImageHeader(
                   image: image,
                   title: title,
@@ -69,7 +82,7 @@ class PropertyDetailsScreen extends StatelessWidget {
                   description: description,
                 ),
                 const SizedBox(height: 42),
-                const LocationSection(),
+                 LocationSection(location: location,),
                 const SizedBox(height: 24),
               ],
             ),

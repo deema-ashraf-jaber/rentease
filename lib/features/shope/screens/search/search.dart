@@ -40,21 +40,24 @@ class _SearchState extends State<Search> {
         final map = item as Map<String, dynamic>;
 
         return SearchPropertyModel(
+          id: (map['id'] ?? '').toString(),
           image: (map['image_url'] ?? '').toString(),
           title: (map['title'] ?? '').toString(),
           location: (map['location'] ?? '').toString(),
-          price: '${map['monthly_price'] ?? ''} ش.ج / شهر',
-          rooms: '${map['bedrooms'] ?? ''} غرف',
-          baths: '${map['bathrooms'] ?? ''} حمام',
+          price: (map['monthly_price'] ?? '').toString(),
+          rooms: (map['bedrooms'] ?? '').toString(),
+          baths: (map['bathrooms'] ?? '').toString(),
           size: '${map['area'] ?? ''}م²',
           rating: '4.8',
           status: (map['status'] ?? 'متاح الآن').toString(),
-          createdAt: DateTime.tryParse(
-            (map['created_at'] ?? '').toString(),
-          ) ??
+          createdAt: DateTime.tryParse((map['created_at'] ?? '').toString()) ??
               DateTime.now(),
           description: (map['description'] ?? '').toString(),
+          ownerId: (map['owner_id'] ?? '').toString(),
+          ownerName: (map['owner_email'] ?? 'معلن العقار').toString(),
+          ownerPhone: (map['owner_phone'] ?? '').toString(),
         );
+
       }).toList();
 
       if (!mounted) return;

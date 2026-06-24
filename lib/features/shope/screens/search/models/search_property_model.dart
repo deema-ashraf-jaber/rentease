@@ -10,8 +10,16 @@ class SearchPropertyModel {
   final String status;
   final DateTime createdAt;
   final String description;
+  final String id;
+  final String ownerId;
+  final String ownerName;
+  final String ownerPhone;
 
   const SearchPropertyModel({
+    required this.id,
+    required this.ownerId,
+    required this.ownerPhone,
+    required this.ownerName,
     required this.image,
     required this.title,
     required this.location,

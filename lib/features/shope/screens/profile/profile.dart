@@ -331,28 +331,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Column(
                   children: [
-                    SettingsTile(
-                      title: 'الوضع الليلي',
-                      icon: Icons.dark_mode_outlined,
-                      trailing: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: Transform.scale(
-                          scale: 0.75,
-                          child: Switch(
-                            value: false,
-                            onChanged: (value) {},
-                            activeColor: Colors.white,
-                            activeTrackColor: TColors.PrimaryColor,
-                            inactiveThumbColor: Colors.white,
-                            inactiveTrackColor: const Color(0xffE2E8F0),
-                            trackOutlineColor: WidgetStateProperty.all(
-                              Colors.transparent,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const TDivider(),
+
                     SettingsTile(
                       title: 'الإشعارات',
                       icon: Icons.notifications_none,
@@ -371,16 +350,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                     ),
                     const TDivider(),
-                    SettingsTile(
-                      title: 'المحادثات',
-                      icon: Icons.chat_bubble_outline,
-                      badgeCount: 3,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ChatsScreen(),
-                          ),
+                    FutureBuilder(
+                      future: Supabase.instance.client
+                          .from('messages')
+                          .select('id')
+                          .eq('receiver_id', Supabase.instance.client.auth.currentUser!.id)
+                          .eq('is_read', false),
+                      builder: (context, snapshot) {
+                        final count = snapshot.hasData ? (snapshot.data as List).length : 0;
+
+                        return SettingsTile(
+                          title: 'المحادثات',
+                          icon: Icons.chat_bubble_outline,
+                          badgeCount: count,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ChatsScreen(),
+                              ),
+                            );
+                          },
                         );
                       },
                     ),

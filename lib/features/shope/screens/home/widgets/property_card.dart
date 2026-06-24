@@ -20,11 +20,12 @@ class PropertyCard extends StatelessWidget {
     required this.ownerId,
     required this.ownerName,
     required this.ownerPhone,
-    this.iconData = Icons.square_foot_outlined,
+    required this.propertyId,
+  this.iconData = Icons.square_foot_outlined,
   });
 
   final String image, title, location, price, beds, baths, area, description;
-  final String ownerId, ownerName, ownerPhone;
+  final String ownerId, ownerName, ownerPhone , propertyId;
   final IconData iconData;
 
   ImageProvider get imageProvider {
@@ -39,6 +40,10 @@ class PropertyCard extends StatelessWidget {
     final favoriteProperty = FavoriteProperty(
       image: image,
       title: title,
+      propertyId: propertyId,
+      ownerId: ownerId,
+      ownerName: ownerName,
+      ownerPhone: ownerPhone,
       location: location,
       price: price,
       rooms: beds,
@@ -59,6 +64,7 @@ class PropertyCard extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => PropertyDetailsScreen(
                     image: image,
+                    propertyId: propertyId,
                     title: title,
                     location: location,
                     price: price,
@@ -98,12 +104,11 @@ class PropertyCard extends StatelessWidget {
                   child: ValueListenableBuilder(
                     valueListenable: FavoriteManager.favorites,
                     builder: (context, favorites, _) {
-                      final isFav = FavoriteManager.isFavorite(title);
-
+                      final isFav = FavoriteManager.isFavorite(propertyId);
                       return GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          FavoriteManager.toggleFavorite(favoriteProperty);
+                        onTap: () async {
+                          await FavoriteManager.toggleFavorite(favoriteProperty);
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),

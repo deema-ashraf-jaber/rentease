@@ -6,10 +6,11 @@ import '../one_chats/one_chats.dart';
 
 class ChatCard extends StatelessWidget {
   final ChatModel chat;
-
+  final VoidCallback? onChatClosed;
   const ChatCard({
     super.key,
     required this.chat,
+    this.onChatClosed
   });
 
   @override
@@ -22,7 +23,9 @@ class ChatCard extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => OneChatsScreen(chat: chat),
           ),
-        );
+        ).then((_) {
+          onChatClosed?.call();
+        },);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -86,12 +89,17 @@ class ChatCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        chat.name,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2B2B2B),
+                      Expanded(
+                        child: Text(
+                          chat.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF2B2B2B),
+                          ),
                         ),
                       ),
                       const Spacer(),

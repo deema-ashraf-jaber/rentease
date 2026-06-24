@@ -5,6 +5,7 @@ import 'package:rentease/features/authentication/screens/login/reset_password/re
 import '../../../../../utils/constants/colors.dart';
 import '../chats/models/chat_model.dart';
 import '../chats/one_chats/one_chats.dart';
+import '../chats/support_chat_helper.dart';
 
 class AccountSecurityScreen extends StatelessWidget {
   const AccountSecurityScreen({super.key});
@@ -396,29 +397,10 @@ class _HelpCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
               ),
-              onPressed: () {
-                const supportChat = ChatModel(
-                  name: 'الدعم الفني',
-                  lastMessage: 'مرحباً، كيف يمكننا مساعدتك اليوم؟',
-                  time: 'الآن',
-                  isOnline: true,
-                  isCompany: true,
-                  messages: const [
-                    ChatMessageModel(
-                      text: 'مرحباً بك في دعم RentEase، كيف يمكننا مساعدتك اليوم؟',
-                      isSender: true,
-                      time: 'الآن',
-                    ),
-                  ],
-                );
+              onPressed:(){
+                SupportChatHelper.openSupportChat(context);
+                },
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const OneChatsScreen(chat: supportChat),
-                  ),
-                );
-              },
               child: const Text(
                 "تواصل معنا",
                 style: TextStyle(

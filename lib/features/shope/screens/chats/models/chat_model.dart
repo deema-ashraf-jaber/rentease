@@ -1,33 +1,27 @@
 class ChatModel {
-  final String name;
-  final String lastMessage;
-  final String time;
+  final String id,name,lastMessage,time,chatType;
+  final String? ownerId,tenantId,propertyId,imagePath;
   final int? unreadCount;
-  final String? imagePath;
-  final bool isOnline;
-  final bool isCompany;
-  final bool isMyProperty;
+  final bool isOnline,isCompany,isMyProperty;
   final List<ChatMessageModel> messages;
-
   const ChatModel({
+    this.id = '',
+    this.ownerId,
+    this.tenantId,
+    this.propertyId,
     required this.name,
     required this.lastMessage,
     required this.time,
     this.unreadCount,
     this.imagePath,
+    this.chatType='property',
     this.isOnline = false,
     this.isCompany = false,
     this.isMyProperty = false,
-    required this.messages,
-  });
-}
-
+    required this.messages,});}
 class ChatMessageModel {
-  final String text;
-  final bool isSender;
-  final String time;
-  final bool isSeen;
-
+  final String text ,time;
+  final bool isSender,isSeen;
   const ChatMessageModel({
     required this.text,
     required this.isSender,
