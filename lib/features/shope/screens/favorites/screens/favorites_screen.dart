@@ -1,85 +1,157 @@
 import 'package:flutter/material.dart';
+import 'package:rentease/common/widgets/appbar/appbar.dart';
+import 'package:rentease/features/shope/screens/notifications/notifications.dart';
 
-import '../models/favorite_property_model.dart';
+import '../../../../../utils/constants/colors.dart';
+import '../models/favorite_manager.dart';
 import '../widgets/favorite_property_card.dart';
-import '../widgets/bottom_nav_bar.dart';
 
-class FavoritesScreen extends StatelessWidget {
-  FavoritesScreen({super.key});
+class FavoritesScreen extends StatefulWidget {
+  const FavoritesScreen({super.key});
 
-  final List<FavoriteProperty> favorites = [
+  @override
+  State<FavoritesScreen> createState() => _FavoritesScreenState();
+}
 
-    FavoriteProperty(
-      image: 'assets/images/properties/apartment1.jpg',
-      title: 'شقة فاخرة في حي الرمال',
-      location: 'غزة - حي الرمال الشمالي',
-      price: '\$1200 / شهر',
-      rooms: '3 غرف',
-      bathrooms: '2 حمام',
-      area: '145 م²',
-    ),
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    FavoriteManager.loadFavorites();
+  }
+  bool sortLowToHigh = true;
 
-    FavoriteProperty(
-      image: 'assets/images/properties/apartment2.jpg',
-      title: 'مجمع عصري في تل الهوى',
-      location: 'غزة - تل الهوى',
-      price: '\$950 / شهر',
-      rooms: '4 غرف',
-      bathrooms: '3 حمام',
-      area: '180 م²',
-    ),
-  ];
+  int _priceNumber(String price) {
+    return int.tryParse(price.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      backgroundColor: const Color(0xffF5F5F5),
-
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        title: const Text(
-          'المفضلة',
-          style: TextStyle(
-            color: Colors.black,
+      backgroundColor: TColors.backgroundColor,
+      appBar:TAppBar(title: "المفضلة" , isBack: false,actionIcon:Icons.notifications_none ,onActionPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+            const NotificationsScreen(),
           ),
-        ),
-      ),
-
+        );
+      },),
+      // AppBar(
+      //   backgroundColor: Colors.white,
+      //   centerTitle: true,
+      //   elevation: 0,
+      //   title: const Text(
+      //     'المفضلة',
+      //     style: TextStyle(
+      //       color: TColors.PrimaryColor,
+      //       fontWeight: FontWeight.bold,
+      //     ),
+      //   ),
+      //   leading: const Icon(Icons.arrow_back, color: TColors.PrimaryColor),
+      //   actions: const [
+      //     Padding(
+      //       padding: EdgeInsets.only(right: 16),
+      //       child: Icon(Icons.notifications_none, color: TColors.PrimaryColor),
+      //     ),
+      //   ],
+      // ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+        child: ValueListenableBuilder(
+          valueListenable: FavoriteManager.favorites,
+          builder: (context, favorites, _) {
+            final sortedFavorites = [...favorites];
 
-            const Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'قائمة رغباتك',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+            sortedFavorites.sort((a, b) {
+              final aPrice = _priceNumber(a.price);
+              final bPrice = _priceNumber(b.price);
+
+              return sortLowToHigh
+                  ? aPrice.compareTo(bPrice)
+                  : bPrice.compareTo(aPrice);
+            });
+
+            return Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'قائمة رغباتك',
+                        style: TextStyle(
+                          color: TColors.PrimaryColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'لديك ${favorites.length} عقارات محفوظة حالياً',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 15),
+                const SizedBox(height: 10),
 
-            Expanded(
-              child: ListView.builder(
-                itemCount: favorites.length,
-                itemBuilder: (context, index) {
-                  return FavoritePropertyCard(
-                    property: favorites[index],
-                  );
-                },
-              ),
-            ),
-          ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        sortLowToHigh = !sortLowToHigh;
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.sort,
+                      size: 18,
+                      color: TColors.PrimaryColor,
+                    ),
+                    label: Text(
+                      sortLowToHigh
+                          ? 'ترتيب: الأقل سعراً'
+                          : 'ترتيب: الأعلى سعراً',
+                      style: const TextStyle(
+                        color: TColors.PrimaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Expanded(
+                  child: sortedFavorites.isEmpty
+                      ? const Center(
+                    child: Text(
+                      'لا توجد عقارات في المفضلة',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                      : ListView.builder(
+                    itemCount: sortedFavorites.length,
+                    itemBuilder: (context, index) {
+                      return FavoritePropertyCard(
+                        property: sortedFavorites[index],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
-
-
     );
   }
 }

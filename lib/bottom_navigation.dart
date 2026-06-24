@@ -7,27 +7,38 @@ import 'features/shope/screens/profile/profile.dart';
 import 'features/shope/screens/search/search.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
-  const BottomNavigationScreen({super.key});
-
+  const BottomNavigationScreen({super.key,this.initialIndex = 0});
+  final int initialIndex ;
   @override
   State<BottomNavigationScreen> createState() => _BottomNavigationScreenState();
 }
 
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex ;
 
   late final List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
-
+    _selectedIndex = widget.initialIndex;
     _pages = [
-      const HomeScreen(),
+      HomeScreen(
+        onAddPressed:(){
+          _onTap(2);
+        },
+        onProfilePressed:(){
+          _onTap(4);
+    }
+      ),
       const Search(),
       const AddPropertyScreen(),
-      FavoritesScreen(),
-      const ProfileScreen(),
+      const FavoritesScreen(),
+       ProfileScreen(
+        onSearchPressed: (){
+          _onTap(1);
+        },
+      ),
     ];
   }
 

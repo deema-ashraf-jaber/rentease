@@ -1,118 +1,169 @@
 import 'package:flutter/material.dart';
+import '../../../../../utils/constants/colors.dart';
+import '../../home/property_details_screen/property_details_screen.dart';
+import '../models/favorite_manager.dart';
 import '../models/favorite_property_model.dart';
 
 class FavoritePropertyCard extends StatelessWidget {
   final FavoriteProperty property;
 
   const FavoritePropertyCard({
-    Key? key,
+    super.key,
     required this.property,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 20),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 2,
-      child: Column(
-        children: [
-
-          Stack(
-            children: [
-
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-                child: Image.asset(
-                  property.image,
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-
-              Positioned(
-                top: 10,
-                right: 10,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.favorite,
-                    color: Colors.red,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PropertyDetailsScreen(
+              propertyId: property.propertyId,
+              image: property.image,
+              title: property.title,
+              location: property.location,
+              price: property.price,
+              beds: property.rooms,
+              baths: property.bathrooms,
+              area: property.area,
+              description: property.description,
+              ownerId: property.ownerId,
+              ownerName: property.ownerName,
+              ownerPhone: property.ownerPhone,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 22),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(.04),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
+                  child: Image(
+                    image: property.image.startsWith('http')
+                        ? NetworkImage(property.image)
+                        : AssetImage(property.image) as ImageProvider,
+                    height: 190,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
 
-              Positioned(
-                bottom: 10,
-                left: 10,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade900,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    property.price,
-                    style: const TextStyle(
-                      color: Colors.white,
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: GestureDetector(
+                    onTap: () async{
+                      await FavoriteManager.removeFavorite(property.propertyId);
+                    },
+                    child: const CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
 
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-
-                Text(
-                  property.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Positioned(
+                  bottom: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: TColors.PrimaryColor,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Text(
+                      '${property.price} / شهر',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  textAlign: TextAlign.right,
-                ),
-
-                const SizedBox(height: 5),
-
-                Text(
-                  property.location,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.right,
-                ),
-
-                const SizedBox(height: 10),
-
-                Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly,
-                  children: [
-
-                    Text(property.area),
-
-                    Text(property.bathrooms),
-
-                    Text(property.rooms),
-                  ],
                 ),
               ],
             ),
-          ),
-        ],
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    property.title,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 21,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        property.location,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('${property.area} م²'),
+                      const SizedBox(width: 18),
+                      Text('${property.bathrooms} حمام'),
+                      const SizedBox(width: 18),
+                      Text('${property.rooms} غرف'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

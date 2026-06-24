@@ -1,42 +1,35 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/constants/colors.dart';
+import '../models/chat_model.dart';
 import '../one_chats/one_chats.dart';
 
 class ChatCard extends StatelessWidget {
-  final String name;
-  final String message;
-  final String time;
-  final int? unreadCount;
-  final String? imagePath;
-  final bool isOnline;
-  final bool isCompany;
-
+  final ChatModel chat;
+  final VoidCallback? onChatClosed;
   const ChatCard({
     super.key,
-    required this.name,
-    required this.message,
-    required this.time,
-    this.unreadCount,
-    this.imagePath,
-    this.isOnline = false,
-    this.isCompany = false,
+    required this.chat,
+    this.onChatClosed
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const OneChatsScreen(),
+            builder: (context) => OneChatsScreen(chat: chat),
           ),
-        );
+        ).then((_) {
+          onChatClosed?.call();
+        },);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all( 16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -55,25 +48,25 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 27,
-                  backgroundColor: isCompany
+                  backgroundColor: chat.isCompany
                       ? const Color(0xFF9EC2FE)
                       : const Color(0xFFE9EEF5),
                   backgroundImage:
-                  imagePath != null ? AssetImage(imagePath!) : null,
-                  child: isCompany
+                  chat.imagePath != null ? AssetImage(chat.imagePath!) : null,
+                  child: chat.isCompany
                       ? const Icon(
                     Icons.business,
                     color: TColors.PrimaryColor,
                     size: 28,
                   )
-                      : imagePath == null
+                      : chat.imagePath == null
                       ? const Icon(
                     Icons.person,
                     color: TColors.PrimaryColor,
                   )
                       : null,
                 ),
-                if (isOnline)
+                if (chat.isOnline)
                   Positioned(
                     bottom: 2,
                     right: 2,
@@ -89,31 +82,35 @@ class ChatCard extends StatelessWidget {
                   ),
               ],
             ),
-
             const SizedBox(width: 16),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2B2B2B),
+                      Expanded(
+                        child: Text(
+                          chat.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF2B2B2B),
+                          ),
                         ),
                       ),
                       const Spacer(),
                       Text(
-                        time,
+                        chat.time,
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight:
-                          unreadCount != null ? FontWeight.w700 : FontWeight.w400,
-                          color: unreadCount != null
+                          fontWeight: chat.unreadCount != null
+                              ? FontWeight.w700
+                              : FontWeight.w400,
+                          color: chat.unreadCount != null
                               ? TColors.PrimaryColor
                               : const Color(0xFF6B7280),
                         ),
@@ -123,17 +120,19 @@ class ChatCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text(
-                        message,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF5F6368),
+                      Expanded(
+                        child: Text(
+                          chat.lastMessage,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF5F6368),
+                          ),
                         ),
                       ),
-                      const Spacer(),
-                      if (unreadCount != null)
+                      const SizedBox(width: 8),
+                      if (chat.unreadCount != null)
                         Container(
                           width: 20,
                           height: 20,
@@ -143,16 +142,14 @@ class ChatCard extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Text(
-                            unreadCount.toString(),
+                            chat.unreadCount.toString(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                        )
-                      else
-                        const SizedBox(height: 20),
+                        ),
                     ],
                   ),
                 ],

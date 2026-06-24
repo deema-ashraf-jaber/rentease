@@ -8,7 +8,7 @@ class SendCodeButton extends StatelessWidget {
     required this.onPressed,
   });
 
-  final VoidCallback onPressed;
+  final Future<void> Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {

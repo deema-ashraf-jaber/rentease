@@ -3,11 +3,19 @@ import 'package:flutter/material.dart';
 class CustomInput extends StatelessWidget {
   final String hint;
   final IconData? icon;
+  final TextEditingController controller;
+  final TextInputType keyboardType;
+  final void Function(String)? onChanged;
+  final VoidCallback? onTap;
 
   const CustomInput({
     super.key,
     required this.hint,
+    required this.controller,
     this.icon,
+    this.keyboardType = TextInputType.text,
+    this.onChanged,
+    this.onTap,
   });
 
   @override
@@ -25,19 +33,22 @@ class CustomInput extends StatelessWidget {
         textDirection: TextDirection.rtl,
         children: [
           if (icon != null) ...[
-            Icon(
-              icon,
-              color: const Color(0xff6D7280),
-            ),
+            Icon(icon, color: const Color(0xff6D7280)),
             const SizedBox(width: 8),
           ],
           Expanded(
-            child: Text(
-              hint,
+            child: TextField(
+              controller: controller,
+              keyboardType: keyboardType,
+              onChanged: onChanged,
+              onTap: onTap,
               textAlign: TextAlign.right,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                color: const Color(0xff6B728080).withOpacity(0.50),
+              decoration: InputDecoration(
+                hintText: hint,
+                border: InputBorder.none,
+                hintStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: const Color(0xff6B728080).withOpacity(0.50),
+                ),
               ),
             ),
           ),

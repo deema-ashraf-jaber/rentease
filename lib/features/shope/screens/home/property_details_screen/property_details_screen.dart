@@ -8,28 +8,82 @@ import 'widgets/property_details_section.dart';
 import 'widgets/property_image_header.dart';
 
 class PropertyDetailsScreen extends StatelessWidget {
-  const PropertyDetailsScreen({super.key});
+  const PropertyDetailsScreen({
+    super.key,
+    required this.image,
+    required this.title,
+    required this.location,
+    required this.price,
+    required this.beds,
+    required this.baths,
+    required this.area,
+    required this.description,
+    required this.ownerId,
+    required this.ownerName,
+    required this.ownerPhone,
+    required this.propertyId,
+  });
+
+  final String image;
+  final String title;
+  final String location;
+  final String price;
+  final String beds;
+  final String baths;
+  final String area;
+  final String description;
+  final String ownerId;
+  final String ownerName;
+  final String ownerPhone;
+  final String propertyId;
 
   @override
   Widget build(BuildContext context) {
-    return const Directionality(
+    return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Colors.white,
-        bottomNavigationBar: BottomContactBar(),
+        bottomNavigationBar: BottomContactBar(
+          propertyId: propertyId,
+          ownerId: ownerId, ownerName: ownerName, ownerPhone:ownerPhone, propertyTitle: title,
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                DetailsAppBar(),
-                PropertyImageHeader(),
-                SizedBox(height: 175),
-                FeaturesGrid(),
-                SizedBox(height: 48),
-                PropertyDetailsSection(),
-                SizedBox(height: 42),
-                LocationSection(),
-                SizedBox(height: 24),
+                 DetailsAppBar(
+                    image: image,
+                    title: title,
+                    location: location,
+                    price: price,
+                    beds: beds,
+                    baths: baths,
+                    area: area,
+                    description: description,
+                    ownerPhone: ownerPhone,
+                  ),
+                PropertyImageHeader(
+                  image: image,
+                  title: title,
+                  location: location,
+                  price: price,
+                ),
+                const SizedBox(height: 175),
+                FeaturesGrid(
+                  beds: beds,
+                  baths: baths,
+                  area: area,
+                ),
+                const SizedBox(height: 48),
+                PropertyDetailsSection(
+                  title: title,
+                  location: location,
+                  price: price,
+                  description: description,
+                ),
+                const SizedBox(height: 42),
+                 LocationSection(location: location,),
+                const SizedBox(height: 24),
               ],
             ),
           ),

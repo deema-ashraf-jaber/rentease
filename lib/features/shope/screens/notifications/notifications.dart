@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rentease/bottom_navigation.dart';
 import 'package:rentease/common/widgets/appbar/appbar.dart';
 import 'package:rentease/features/shope/screens/notifications/widgets/empty_notifications.dart';
 import 'package:rentease/features/shope/screens/notifications/widgets/notification_card.dart';
@@ -7,18 +8,21 @@ import '../../../../utils/constants/colors.dart';
 
 
 class NotificationsScreen extends StatelessWidget {
-  const NotificationsScreen({super.key});
-
+  const NotificationsScreen({super.key,this.onSearchPressed});
+  final VoidCallback? onSearchPressed;
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-        backgroundColor: Color(0xFFF8F9FB),
+    return  Scaffold(
+        backgroundColor: TColors.backgroundColor,
         appBar: TAppBar(
           title: 'التنبيهات',
           actionIcon:
             Icons.search,
+          onActionPressed: onSearchPressed ?? (){
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const BottomNavigationScreen(initialIndex: 1,),),);
+          },
         ),
-        body: Directionality(
+        body: const Directionality(
           textDirection: TextDirection.rtl,
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),

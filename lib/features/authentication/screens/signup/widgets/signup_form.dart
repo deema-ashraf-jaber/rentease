@@ -1,220 +1,291 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:rentease/features/authentication/screens/login/login.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../utils/constants/colors.dart';
+import '../../../../../utils/constants/sizes.dart';
 import '../verify_email.dart';
-import 'terms_conditions_checkbox.dart';
 
-class TSignupForm extends StatelessWidget {
+class TSignupForm extends StatefulWidget {
   const TSignupForm({super.key});
+
+  @override
+  State<TSignupForm> createState() => _TSignupFormState();
+}
+
+class _TSignupFormState extends State<TSignupForm> {
+  final _formKey = GlobalKey<FormState>();
+
+  final fullNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  bool isLoading = false;
+  bool acceptTerms = false;
+  bool hidePassword = true;
+
+  @override
+  void dispose() {
+    fullNameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  InputDecoration customInput(String hint, IconData icon, {Widget? suffixIcon}) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: Colors.grey.shade200,
+      prefixIcon: Icon(icon, color: Colors.grey),
+      suffixIcon: suffixIcon,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      errorMaxLines: 2,
+    );
+  }
+
+  Future<void> signup() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (!acceptTerms) {
+      Get.snackbar(
+        'تنبيه',
+        'يجب الموافقة على الشروط والأحكام',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      setState(() => isLoading = true);
+
+      // await Supabase.instance.client.auth.signInWithOtp(
+      //   email: emailController.text.trim(),
+      //   data: {
+      //     'full_name': fullNameController.text.trim(),
+      //     'phone': phoneController.text.trim(),
+      //     'password': passwordController.text.trim(),
+      //   },
+      // );
+      final response = await Supabase.instance.client.auth.signUp(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        data: {
+          'full_name': fullNameController.text.trim(),
+          'phone': phoneController.text.trim(),
+        },
+      );
+
+      final user = response.user;
+
+      if (user == null) {
+        throw Exception('لم يتم إنشاء المستخدم');
+      }
+
+      await Supabase.instance.client.from('profiles').insert({
+        'id': user.id,
+        'full_name': fullNameController.text.trim(),
+        'email': emailController.text.trim(),
+        'phone': phoneController.text.trim(),
+      });
+      Get.snackbar(
+        'تم إرسال الرمز',
+        'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      // Get.to(
+      //       () => VerifyEmailScreen(
+      //     email: emailController.text.trim(),
+      //     password: passwordController.text.trim(),
+      //     fullName: fullNameController.text.trim(),
+      //     phone: phoneController.text.trim(),
+      //   ),
+      // );
+
+      Get.offAll(()  => const LoginScreen());
+    } on AuthException catch (e) {
+      Get.snackbar(
+        'خطأ',
+        e.message,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'خطأ',
+        'حدث خطأ أثناء إنشاء الحساب',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  Widget fieldTitle(String title) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: TColors.PrimaryColor,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: const [
-          _SignupTextField(
-            label: "الاسم الكامل",
-            hint: "أدخل اسمك",
-            icon: Iconsax.user,
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
+        children: [
+          fieldTitle("الاسم الكامل"),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: fullNameController,
+            decoration: customInput("أدخل اسمك", Iconsax.user),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'الرجاء إدخال الاسم الكامل';
+              }
+              if (value.trim().length < 3) {
+                return 'الاسم يجب أن يكون 3 أحرف على الأقل';
+              }
+              return null;
+            },
           ),
-          SizedBox(height: 22),
-          _SignupTextField(
-            label: "البريد الإلكتروني",
-            hint: "example@mail.com",
-            icon: Iconsax.direct,
+
+          const SizedBox(height: TSizes.spaceBtwInputFields),
+
+          fieldTitle("البريد الإلكتروني"),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: emailController,
             keyboardType: TextInputType.emailAddress,
-            textDirection: TextDirection.ltr,
-            textAlign: TextAlign.left,
+            decoration: customInput("example@mail.com", Iconsax.direct),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'الرجاء إدخال البريد الإلكتروني';
+              }
+              if (!GetUtils.isEmail(value.trim())) {
+                return 'الرجاء إدخال بريد إلكتروني صحيح';
+              }
+              return null;
+            },
           ),
-          SizedBox(height: 22),
-          _SignupTextField(
-            label: "رقم الهاتف",
-            hint: "+970 59 000 0000",
-            icon: Iconsax.call,
+
+          const SizedBox(height: TSizes.spaceBtwInputFields),
+
+          fieldTitle("رقم الهاتف"),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: phoneController,
             keyboardType: TextInputType.phone,
-            textDirection: TextDirection.ltr,
-            textAlign: TextAlign.left,
+            decoration: customInput("+970 59 000 0000", Iconsax.call),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'الرجاء إدخال رقم الهاتف';
+              }
+              if (value.trim().length < 9) {
+                return 'رقم الهاتف غير صحيح';
+              }
+              return null;
+            },
           ),
-          SizedBox(height: 22),
-          _SignupPasswordField(),
-          SizedBox(height: 26),
-          TermsAndConditionsCheckbox(),
-          SizedBox(height: 34),
-          _CreateAccountButton(),
-        ],
-      ),
-    );
-  }
-}
 
-class _SignupTextField extends StatelessWidget {
-  const _SignupTextField({
-    required this.label,
-    required this.hint,
-    required this.icon,
-    this.keyboardType,
-    this.textDirection,
-    this.textAlign,
-  });
+          const SizedBox(height: TSizes.spaceBtwInputFields),
 
-  final String label;
-  final String hint;
-  final IconData icon;
-  final TextInputType? keyboardType;
-  final TextDirection? textDirection;
-  final TextAlign? textAlign;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: TColors.PrimaryColor,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          keyboardType: keyboardType,
-          textDirection: textDirection,
-          textAlign: textAlign ?? TextAlign.right,
-          decoration: _signupInputDecoration(
-            hint: hint,
-            prefixIcon: Icon(
-              icon,
-              color: const Color(0xff777777),
-              size: 24,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SignupPasswordField extends StatefulWidget {
-  const _SignupPasswordField();
-
-  @override
-  State<_SignupPasswordField> createState() => _SignupPasswordFieldState();
-}
-
-class _SignupPasswordFieldState extends State<_SignupPasswordField> {
-  bool hidePassword = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        const Text(
-          "كلمة المرور",
-          style: TextStyle(
-            color: TColors.PrimaryColor,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          obscureText: hidePassword,
-          textDirection: TextDirection.ltr,
-          textAlign: TextAlign.left,
-          decoration: _signupInputDecoration(
-            hint: "••••••••",
-            prefixIcon: const Icon(
+          fieldTitle("كلمة المرور"),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: passwordController,
+            obscureText: hidePassword,
+            decoration: customInput(
+              "••••••••",
               Iconsax.lock,
-              color: Color(0xff777777),
-              size: 24,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  hidePassword ? Iconsax.eye_slash : Iconsax.eye,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() => hidePassword = !hidePassword);
+                },
+              ),
             ),
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  hidePassword = !hidePassword;
-                });
-              },
-              icon: Icon(
-                hidePassword ? Iconsax.eye_slash : Iconsax.eye,
-                color: const Color(0xff777777),
-                size: 24,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'الرجاء إدخال كلمة المرور';
+              }
+              if (value.length < 8) {
+                return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: TSizes.spaceBtwItems),
+
+          Row(
+            children: [
+              Checkbox(
+                value: acceptTerms,
+                activeColor: TColors.PrimaryColor,
+                onChanged: (value) {
+                  setState(() => acceptTerms = value ?? false);
+                },
+              ),
+              const Expanded(
+                child: Text(
+                  'أوافق على شروط وأحكام RentEase',
+                  style: TextStyle(fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: TSizes.spaceBtwSections),
+
+          SizedBox(
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: isLoading ? null : signup,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TColors.PrimaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              icon: isLoading
+                  ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+                  : const Icon(Icons.arrow_back),
+              label: Text(
+                isLoading ? "جاري إرسال الرمز..." : "إنشاء حساب",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-InputDecoration _signupInputDecoration({
-  required String hint,
-  required Widget prefixIcon,
-  Widget? suffixIcon,
-}) {
-  return InputDecoration(
-    hintText: hint,
-    hintStyle: const TextStyle(
-      color: Color(0xffC7C7C7),
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-    ),
-    filled: true,
-    fillColor: const Color(0xffF5F5F5),
-    prefixIcon: prefixIcon,
-    suffixIcon: suffixIcon,
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 18,
-      vertical: 18,
-    ),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(4),
-      borderSide: BorderSide.none,
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(4),
-      borderSide: BorderSide.none,
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(4),
-      borderSide: BorderSide.none,
-    ),
-  );
-}
-
-class _CreateAccountButton extends StatelessWidget {
-  const _CreateAccountButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 62,
-      child: ElevatedButton.icon(
-        onPressed: () => Get.to(() => const VerifyEmailScreen()),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: TColors.PrimaryColor,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        icon: const Icon(Icons.arrow_back, size: 22),
-        label: const Text(
-          "إنشاء حساب",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        ],
       ),
     );
   }

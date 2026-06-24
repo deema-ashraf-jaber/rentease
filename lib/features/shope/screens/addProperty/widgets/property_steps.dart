@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:rentease/features/shope/screens/addProperty/widgets/step_item.dart';
 
 class PropertySteps extends StatelessWidget {
-  const PropertySteps({super.key});
+  final int activeStep;
+
+  const PropertySteps({
+    super.key,
+    required this.activeStep,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +25,29 @@ class PropertySteps extends StatelessWidget {
               color: const Color(0xffE8E8E8),
             ),
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              StepItem(number: "١", title: "التفاصيل", active: true),
-              StepItem(number: "٢", title: "الصور"),
-              StepItem(number: "٣", title: "الموقع"),
-              StepItem(number: "٤", title: "المراجعة"),
+              StepItem(
+                number: "١",
+                title: "التفاصيل",
+                active: activeStep == 1,
+              ),
+              StepItem(
+                number: "٢",
+                title: "الصور",
+                active: activeStep == 2,
+              ),
+              StepItem(
+                number: "٣",
+                title: "الموقع",
+                active: activeStep == 3,
+              ),
+              StepItem(
+                number: "٤",
+                title: "المراجعة",
+                active: activeStep == 4,
+              ),
             ],
           ),
         ],

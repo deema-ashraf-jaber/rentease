@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../utils/constants/colors.dart';
 
 class SupportSection extends StatelessWidget {
   const SupportSection({super.key});
+  Future<void> _callSupport() async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: '0599999999');
 
+    if (!await launchUrl(phoneUri)) {
+      throw Exception('Could not launch phone');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -32,10 +39,13 @@ class SupportSection extends StatelessWidget {
                     color: TColors.PrimaryColor,
                   ),
                 ),
-                Text(
-                  'تواصل مع الدعم الفني',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xff474747),
+                InkWell(
+                  onTap: () => _callSupport(),
+                  child: Text(
+                    'تواصل مع الدعم الفني',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: const Color(0xff474747),
+                    ),
                   ),
                 ),
               ],

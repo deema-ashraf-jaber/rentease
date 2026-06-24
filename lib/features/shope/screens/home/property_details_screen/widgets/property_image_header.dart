@@ -1,17 +1,34 @@
 import 'package:flutter/material.dart';
-import '../../../../../../utils/constants/image_strings.dart';
 import 'property_main_card.dart';
 
 class PropertyImageHeader extends StatelessWidget {
-  const PropertyImageHeader({super.key});
+  const PropertyImageHeader({
+    super.key,
+    required this.image,
+    required this.title,
+    required this.location,
+    required this.price,
+  });
+
+  final String image;
+  final String title;
+  final String location;
+  final String price;
+
+  ImageProvider get imageProvider {
+    if (image.startsWith('http')) {
+      return NetworkImage(image);
+    }
+    return AssetImage(image);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Image.asset(
-          TImages.detailsHome,
+        Image(
+          image: imageProvider,
           height: 330,
           width: double.infinity,
           fit: BoxFit.cover,
@@ -34,11 +51,15 @@ class PropertyImageHeader extends StatelessWidget {
             ),
           ),
         ),
-        const Positioned(
+        Positioned(
           right: 24,
           left: 24,
           bottom: -145,
-          child: PropertyMainCard(),
+          child: PropertyMainCard(
+            title: title,
+            location: location,
+            price: price,
+          ),
         ),
       ],
     );

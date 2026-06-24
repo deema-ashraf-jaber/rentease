@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/image_strings.dart';
 
 class TLoginHeader extends StatelessWidget {
@@ -11,25 +10,22 @@ class TLoginHeader extends StatelessWidget {
     return Column(
       children: [
         Image.asset(
-          TImages.logo, // غيّريه حسب اسم اللوغو عندك
-          height: 105,
+          TImages.logo,
+          height: 90,
         ),
-        const SizedBox(height: 30),
-        const Text(
+        const SizedBox(height: 20),
+        Text(
           "تسجيل الدخول",
-          style: TextStyle(
-            color: TColors.PrimaryColor,
-            fontSize: 44,
-            fontWeight: FontWeight.w800,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1D3D7C),
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           "أدخل بياناتك للوصول إلى حسابك",
-          style: TextStyle(
-            color: Color(0xff8A8A8A),
-            fontSize: 20,
-            fontWeight: FontWeight.w400,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.grey,
           ),
         ),
       ],

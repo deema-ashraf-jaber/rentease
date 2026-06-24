@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import 'feature_box.dart';
 
 class FeaturesGrid extends StatelessWidget {
-  const FeaturesGrid({super.key});
+  const FeaturesGrid({
+    super.key,
+    required this.beds,
+    required this.baths,
+    required this.area,
+  });
+
+  final String beds;
+  final String baths;
+  final String area;
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +24,11 @@ class FeaturesGrid extends StatelessWidget {
         mainAxisSpacing: 22,
         crossAxisSpacing: 16,
         childAspectRatio: 1.55,
-        children: const [
-          FeatureBox(icon: Icons.bed_outlined, title: '٤ غرف نوم'),
-          FeatureBox(icon: Icons.bathtub_outlined, title: '٣ دورات مياه'),
-          FeatureBox(icon: Icons.square_foot_outlined, title: '٣٥٠ متر مربع'),
-          FeatureBox(icon: Icons.garage_outlined, title: 'موقف سيارة'),
+        children: [
+          FeatureBox(icon: Icons.bed_outlined, title: beds),
+          FeatureBox(icon: Icons.bathtub_outlined, title: baths),
+          FeatureBox(icon: Icons.square_foot_outlined, title: area),
+          const FeatureBox(icon: Icons.garage_outlined, title: 'موقف سيارة'),
         ],
       ),
     );

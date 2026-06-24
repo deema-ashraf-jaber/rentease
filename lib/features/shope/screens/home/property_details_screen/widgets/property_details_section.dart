@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'section_title.dart';
 
 class PropertyDetailsSection extends StatelessWidget {
-  const PropertyDetailsSection({super.key});
+  const PropertyDetailsSection({
+    super.key,
+    required this.title,
+    required this.location,
+    required this.price,
+    required this.description,
+  });
+
+  final String title;
+  final String location;
+  final String price;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +37,7 @@ class PropertyDetailsSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
-            'تتميز هذه الفيلا بتصميم عصري يجمع بين الأناقة والراحة، مع مساحات واسعة وإضاءة طبيعية غامرة بفضل النوافذ الكبيرة. تقع في أحد أرقى أحياء غزة، وتوفر خصوصية تامة للعائلة مع سهولة الوصول إلى الخدمات الرئيسية. تم استخدام أجود أنواع المواد في التشطيبات النهائية وعدم وجود أضرار حرب.',
+            description,
             textAlign: TextAlign.right,
             style: Theme.of(context).textTheme.titleSmall!.copyWith(
               color: const Color(0xff6B7280),

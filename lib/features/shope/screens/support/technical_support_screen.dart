@@ -2,31 +2,96 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 import 'package:rentease/utils/constants/colors.dart';
+import '../../../../utils/constants/image_strings.dart';
 
-class TechnicalSupportScreen extends StatelessWidget {
-  const TechnicalSupportScreen({super.key});
+class TechnicalSupportsScreen extends StatefulWidget {
+  const TechnicalSupportsScreen({super.key});
 
   static const Color backgroundColor = Color(0xffF7F7F7);
   static const Color cardColor = Color(0xffF1F1F1);
   static const Color fieldColor = Color(0xffEEEEEE);
 
   @override
+  State<TechnicalSupportsScreen> createState() =>
+      _TechnicalSupportsScreenState();
+}
+
+class _TechnicalSupportsScreenState extends State<TechnicalSupportsScreen> {
+  final subjectController = TextEditingController();
+  final messageController = TextEditingController();
+
+  final String supportEmail = 'support@rentease.com';
+
+  bool isLoading = false;
+
+  Future<void> sendSupportMessage() async {
+    final subject = subjectController.text.trim();
+    final message = messageController.text.trim();
+
+    if (subject.isEmpty || message.isEmpty) {
+      showMessage('الرجاء تعبئة الموضوع والرسالة');
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    await Future.delayed(const Duration(milliseconds: 700));
+
+    // TODO Supabase:
+    // هنا لاحقاً نخزن الاستفسار في جدول support_messages
+    //
+    // await Supabase.instance.client.from('support_messages').insert({
+    //   'subject': subject,
+    //   'message': message,
+    //   'support_email': supportEmail,
+    //   'status': 'new',
+    //   'created_at': DateTime.now().toIso8601String(),
+    //   // 'user_id': Supabase.instance.client.auth.currentUser!.id,
+    // });
+    //
+    // ممكن كمان لاحقاً تعملوا Edge Function ترسل الرسالة فعلياً للبريد:
+    // supportEmail
+
+    setState(() => isLoading = false);
+
+    subjectController.clear();
+    messageController.clear();
+
+    showMessage('تم إرسال استفسارك بنجاح، وسيتم الرد عليك في أقرب وقت.');
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: TColors.PrimaryColor,
+        content: Text(
+          message,
+          textAlign: TextAlign.right,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    subjectController.dispose();
+    messageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: backgroundColor,
-
+        backgroundColor: TechnicalSupportsScreen.backgroundColor,
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
           centerTitle: false,
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back,
-              color: TColors.PrimaryColor,
-            ),
+            icon: const Icon(Icons.arrow_back, color: TColors.PrimaryColor),
           ),
           title: const Text(
             'RentEase',
@@ -47,24 +112,18 @@ class TechnicalSupportScreen extends StatelessWidget {
             ),
           ],
         ),
-
-        bottomNavigationBar: const _CustomBottomNav(),
-
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 34),
           child: Column(
-            children: const [
-              SizedBox(height: 8),
-
-              Icon(
+            children: [
+              const SizedBox(height: 8),
+              const Icon(
                 Iconsax.message_question,
                 color: TColors.PrimaryColor,
                 size: 34,
               ),
-
-              SizedBox(height: 18),
-
-              Text(
+              const SizedBox(height: 18),
+              const Text(
                 'الدعم الفني',
                 style: TextStyle(
                   color: TColors.PrimaryColor,
@@ -72,10 +131,8 @@ class TechnicalSupportScreen extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
               ),
-
-              SizedBox(height: 16),
-
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'أرسل لنا استفسارك عبر البريد الإلكتروني وسنقوم\n'
                     'بالرد عليك في أقرب وقت ممكن.',
                 textAlign: TextAlign.center,
@@ -86,14 +143,18 @@ class TechnicalSupportScreen extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+              const SizedBox(height: 46),
 
-              SizedBox(height: 46),
+              _SupportFormCard(
+                subjectController: subjectController,
+                messageController: messageController,
+                isLoading: isLoading,
+                onSend: sendSupportMessage,
+              ),
 
-              _SupportFormCard(),
+              const SizedBox(height: 64),
 
-              SizedBox(height: 64),
-
-              _InfoCard(
+              const _InfoCard(
                 icon: Iconsax.clock,
                 title: 'أوقات العمل',
                 description:
@@ -101,9 +162,9 @@ class TechnicalSupportScreen extends StatelessWidget {
                     'صباحاً - ٦ مساءً.',
               ),
 
-              SizedBox(height: 42),
+              const SizedBox(height: 42),
 
-              _InfoCard(
+              const _InfoCard(
                 icon: Iconsax.shield_tick,
                 title: 'الأمان والخصوصية',
                 description:
@@ -111,15 +172,15 @@ class TechnicalSupportScreen extends StatelessWidget {
                     'مطلقة.',
               ),
 
-              SizedBox(height: 34),
+              const SizedBox(height: 34),
 
-              Image(
-                image: AssetImage('assets/images/support/support_image.png'),
+              const Image(
+                image: AssetImage(TImages.support_image),
                 height: 210,
                 fit: BoxFit.contain,
               ),
 
-              SizedBox(height: 35),
+              const SizedBox(height: 35),
             ],
           ),
         ),
@@ -129,7 +190,17 @@ class TechnicalSupportScreen extends StatelessWidget {
 }
 
 class _SupportFormCard extends StatelessWidget {
-  const _SupportFormCard();
+  const _SupportFormCard({
+    required this.subjectController,
+    required this.messageController,
+    required this.isLoading,
+    required this.onSend,
+  });
+
+  final TextEditingController subjectController;
+  final TextEditingController messageController;
+  final bool isLoading;
+  final VoidCallback onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -148,26 +219,27 @@ class _SupportFormCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        children: const [
+        children: [
           _InputField(
             title: 'الموضوع',
             hintText: 'ما هو موضوع استفسارك؟',
             height: 58,
             maxLines: 1,
+            controller: subjectController,
           ),
-
-          SizedBox(height: 26),
-
+          const SizedBox(height: 26),
           _InputField(
             title: 'الرسالة',
             hintText: 'اكتب تفاصيل رسالتك هنا...',
             height: 160,
             maxLines: 6,
+            controller: messageController,
           ),
-
-          SizedBox(height: 24),
-
-          _SendButton(),
+          const SizedBox(height: 24),
+          _SendButton(
+            isLoading: isLoading,
+            onPressed: onSend,
+          ),
         ],
       ),
     );
@@ -180,12 +252,14 @@ class _InputField extends StatelessWidget {
     required this.hintText,
     required this.height,
     required this.maxLines,
+    required this.controller,
   });
 
   final String title;
   final String hintText;
   final double height;
   final int maxLines;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -211,12 +285,11 @@ class _InputField extends StatelessWidget {
             ),
           ],
         ),
-
         const SizedBox(height: 10),
-
         SizedBox(
           height: height,
           child: TextField(
+            controller: controller,
             maxLines: maxLines,
             textAlign: TextAlign.right,
             textAlignVertical: TextAlignVertical.top,
@@ -227,7 +300,7 @@ class _InputField extends StatelessWidget {
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: TechnicalSupportScreen.fieldColor,
+              fillColor: TechnicalSupportsScreen.fieldColor,
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -244,7 +317,13 @@ class _InputField extends StatelessWidget {
 }
 
 class _SendButton extends StatelessWidget {
-  const _SendButton();
+  const _SendButton({
+    required this.isLoading,
+    required this.onPressed,
+  });
+
+  final bool isLoading;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +331,7 @@ class _SendButton extends StatelessWidget {
       height: 54,
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: TColors.PrimaryColor,
           elevation: 0,
@@ -260,7 +339,9 @@ class _SendButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        child: const Row(
+        child: isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
@@ -301,20 +382,14 @@ class _InfoCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 34, 20, 34),
       decoration: BoxDecoration(
-        color: TechnicalSupportScreen.cardColor,
+        color: TechnicalSupportsScreen.cardColor,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            color: TColors.PrimaryColor,
-            size: 30,
-          ),
-
+          Icon(icon, color: TColors.PrimaryColor, size: 30),
           const SizedBox(width: 28),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -328,9 +403,7 @@ class _InfoCard extends StatelessWidget {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-
                 const SizedBox(height: 12),
-
                 Text(
                   description,
                   textAlign: TextAlign.right,
@@ -342,81 +415,6 @@ class _InfoCard extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CustomBottomNav extends StatelessWidget {
-  const _CustomBottomNav();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 92,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _NavItem(icon: Iconsax.home_2, label: 'الرئيسية'),
-          _NavItem(icon: Iconsax.search_normal, label: 'بحث'),
-          _NavItem(icon: Iconsax.add_circle, label: 'إضافة'),
-          _NavItem(icon: Iconsax.heart, label: 'المفضلة'),
-          _NavItem(
-            icon: Iconsax.user,
-            label: 'الحساب',
-            isSelected: true,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    this.isSelected = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: isSelected ? 72 : 54,
-      height: 66,
-      decoration: BoxDecoration(
-        color: isSelected ? TColors.PrimaryColor : Colors.transparent,
-        borderRadius: BorderRadius.circular(17),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Colors.white : const Color(0xffA7AAB0),
-            size: 24,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : const Color(0xffA7AAB0),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],
