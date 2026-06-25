@@ -20,6 +20,7 @@ class ValidationRule extends StatelessWidget {
           textAlign: TextAlign.right,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
             color: const Color(0xff474747),
+            fontSize: 11
           ),
         ),
 
@@ -28,7 +29,7 @@ class ValidationRule extends StatelessWidget {
         const Icon(
           Icons.check_circle_outline,
           color: TColors.PrimaryColor,
-          size: 20,
+          size: 18,
         ),
       ],
     );

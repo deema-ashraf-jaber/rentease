@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:rentease/features/authentication/screens/login/confirm_code/confirm_code.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../../../../../utils/constants/colors.dart';
 import 'widgets/back_to_login_section.dart';
@@ -46,12 +47,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => isLoading = true);
 
       // موقوف مؤقتًا عشان ما نستهلك Rate Limit تبع Supabase Email.
-      /*
+
       await Supabase.instance.client.auth.resetPasswordForEmail(
         email,
         redirectTo: 'http://localhost:5000',
       );
-      */
+
 
       Navigator.push(
         context,

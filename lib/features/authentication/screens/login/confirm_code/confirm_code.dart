@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:rentease/utils/constants/colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../reset_password/reset_password.dart';
 import 'widgets/confirm_code_header.dart';
@@ -69,13 +70,13 @@ class _ConfirmCodeScreenState extends State<ConfirmCodeScreen> {
       setState(() => isLoading = true);
 
       // موقوف مؤقتًا عشان ما نستهلك Rate Limit تبع Supabase Email/OTP.
-      /*
+
       await Supabase.instance.client.auth.verifyOTP(
         email: widget.email,
         token: otpCode,
         type: OtpType.recovery,
       );
-      */
+
 
       Navigator.push(
         context,

@@ -30,7 +30,7 @@ class TSearchBar extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const BottomNavigationScreen(initialIndex:2 ,),
+                    builder: (context) => const BottomNavigationScreen(initialIndex:1 ,),
                   ),
                 );
               },

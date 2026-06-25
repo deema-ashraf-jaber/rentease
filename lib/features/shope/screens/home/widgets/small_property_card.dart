@@ -124,10 +124,10 @@ class SmallPropertyCard extends StatelessWidget {
                         style:
                         Theme.of(context).textTheme.headlineSmall!.copyWith(
                           color: const Color(0xff4A6FA5),
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(width: 32.4),
+                      const SizedBox(width: 22),
                       Text(
                         "شهرياً",
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(

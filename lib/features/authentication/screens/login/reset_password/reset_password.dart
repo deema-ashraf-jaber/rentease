@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:rentease/features/authentication/screens/login/success_screen/success_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../../../../../utils/constants/colors.dart';
@@ -75,11 +76,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
       // موقوف مؤقتًا:
       // هذا الكود يحتاج أن يكون المستخدم داخل جلسة Recovery بعد التحقق من كود Supabase.
-      /*
+
       await Supabase.instance.client.auth.updateUser(
         UserAttributes(password: password),
       );
-      */
+
 
       if (!mounted) return;
 
